@@ -1,177 +1,194 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useScroll, useTransform, motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { usePortfolioData } from "@/lib/portfolio-context";
+import { useTheme } from "@/lib/theme";
 
-const FRAME_COUNT = 240;
-
-export default function SequenceScroll() {
+export default function Hero() {
+  const { profile } = usePortfolioData();
+  const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [images, setImages] = useState<HTMLImageElement[]>([]);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"],
+    offset: ["start start", "end start"],
   });
 
-  // Load images
-  useEffect(() => {
-    const loadedImages: HTMLImageElement[] = [];
-    let loadedCount = 0;
-
-    for (let i = 1; i <= FRAME_COUNT; i++) {
-      const img = new Image();
-      // Files are named ezgif-frame-001.jpg etc.
-      const paddedIndex = i.toString().padStart(3, "0");
-      img.src = `/sequence/ezgif-frame-${paddedIndex}.jpg`;
-
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === FRAME_COUNT) {
-          setImages(loadedImages);
-          setImagesLoaded(true);
-        }
-      };
-
-      loadedImages.push(img);
-    }
-  }, []);
-
-  // Update Canvas on Scroll
-  useEffect(() => {
-    if (!imagesLoaded || !canvasRef.current || images.length === 0) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Set canvas dimensions to window size to fill screen
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      renderFrame(0); // initial render
-    };
-
-    // Draw the image onto canvas using cover logic
-    const renderFrame = (frameIndex: number) => {
-      if (!images[frameIndex]) return;
-      const img = images[frameIndex];
-
-      const canvasRatio = canvas.width / canvas.height;
-      const imgRatio = img.width / img.height;
-
-      let drawWidth, drawHeight, offsetX, offsetY;
-
-      if (canvasRatio > imgRatio) {
-        drawWidth = canvas.width;
-        drawHeight = canvas.width / imgRatio;
-        offsetX = 0;
-        offsetY = (canvas.height - drawHeight) / 2;
-      } else {
-        drawWidth = canvas.height * imgRatio;
-        drawHeight = canvas.height;
-        offsetX = (canvas.width - drawWidth) / 2;
-        offsetY = 0;
-      }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    };
-
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
-    const unsubscribe = scrollYProgress.onChange((latest) => {
-      const currentFrame = Math.min(
-        FRAME_COUNT - 1,
-        Math.floor(latest * FRAME_COUNT)
-      );
-      renderFrame(currentFrame);
-    });
-
-    return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      unsubscribe();
-    };
-  }, [imagesLoaded, scrollYProgress, images]);
-
-  // Opacity transforms for each text section based on scrollYProgress
-  const opacity1 = useTransform(scrollYProgress, [0, 0.05, 0.1, 0.15], [0, 1, 1, 0]);
-  const opacity2 = useTransform(scrollYProgress, [0.2, 0.3, 0.4, 0.45], [0, 1, 1, 0]);
-  const opacity3 = useTransform(scrollYProgress, [0.5, 0.6, 0.7, 0.75], [0, 1, 1, 0]);
-  const opacity4 = useTransform(scrollYProgress, [0.8, 0.9, 0.95, 1], [0, 1, 1, 0]);
-
-  const y1 = useTransform(scrollYProgress, [0, 0.05, 0.1, 0.15], [50, 0, 0, -50]);
-  const y2 = useTransform(scrollYProgress, [0.2, 0.3, 0.4, 0.45], [50, 0, 0, -50]);
-  const y3 = useTransform(scrollYProgress, [0.5, 0.6, 0.7, 0.75], [50, 0, 0, -50]);
-  const y4 = useTransform(scrollYProgress, [0.8, 0.9, 0.95, 1], [50, 0, 0, -50]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale   = useTransform(scrollYProgress, [0, 0.5], [1, 0.96]);
+  const y       = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
 
   return (
-    <section ref={containerRef} className="relative h-[500vh] w-full bg-black">
-      {/* Sticky Container */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+    <section
+      ref={containerRef}
+      id="home"
+      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      style={{ paddingTop: "80px" }} // offset fixed navbar
+    >
+      {/* Mesh blobs */}
+      <div
+        className="absolute top-[-200px] left-[-200px] w-[650px] h-[650px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(124,111,255,0.14) 0%, transparent 70%)", animation: "meshFloat1 12s ease-in-out infinite alternate" }}
+      />
+      <div
+        className="absolute bottom-[-150px] right-[-100px] w-[500px] h-[500px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(255,111,187,0.09) 0%, transparent 70%)", animation: "meshFloat2 15s ease-in-out infinite alternate" }}
+      />
 
-        {/* Sequence Canvas */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen"
-        />
-
-        {/* Gradient overlays to ensure text is readable */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80" />
-
-        {/* Text Section 1 (5%) - Center */}
+      <motion.div
+        style={{ opacity, scale, y }}
+        className="relative z-10 w-full max-w-[1200px] mx-auto px-6 md:px-16 flex flex-col"
+      >
+        {/* Label */}
         <motion.div
-          style={{ opacity: opacity1, y: y1 }}
-          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="section-label mb-6"
         >
-          <h2 className="text-xl md:text-3xl uppercase tracking-widest text-zinc-400 mb-4">
-            Hello,
-          </h2>
-          <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter">
-            My Name is Jawad Al Amien.<br />Creative Designer
-          </h1>
+          Hello, World ✦ Based in Indonesia
         </motion.div>
 
-        {/* Text Section 2 (30%) - Left Aligned */}
-        <motion.div
-          style={{ opacity: opacity2, y: y2 }}
-          className="absolute inset-0 flex flex-col items-start justify-center pointer-events-none p-8 md:p-24"
-        >
-          <p className="text-3xl md:text-6xl font-bold uppercase leading-tight max-w-4xl text-left">
-            Crafting Digital Experiences That Leave A Lasting Impression Through Motion And Code.
-          </p>
-        </motion.div>
-
-        {/* Text Section 3 (60%) - Right Aligned */}
-        <motion.div
-          style={{ opacity: opacity3, y: y3 }}
-          className="absolute inset-0 flex flex-col items-end justify-center pointer-events-none p-8 md:p-24"
-        >
-          <p className="text-3xl md:text-6xl font-bold uppercase leading-tight max-w-4xl text-right">
-            Where Creativity Meets Scalable Architecture. Building The Future Of Web.
-          </p>
-        </motion.div>
-
-        {/* Text Section 4 (90%) - Center with CTA */}
-        <motion.div
-          style={{ opacity: opacity4, y: y4 }}
-          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center"
-        >
-          <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-8">
-            Let's build something<br />exceptional together.
-          </h2>
-          <a
-            href="#contact"
-            className="hover-target pointer-events-auto px-10 py-4 bg-white text-black font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+        {/* HERO TITLE — Bebas Neue */}
+        <div className="overflow-hidden">
+          <motion.h1
+            initial={{ y: 110, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.55, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              fontFamily: "var(--font-bebas, var(--font-syne))",
+              fontSize: "clamp(3.2rem, 15vw, 13rem)",
+              lineHeight: 0.92,
+              letterSpacing: "0.02em",
+              color: "var(--fg)",
+            }}
           >
-            Start A Project
-          </a>
-        </motion.div>
+            JAWAD
+          </motion.h1>
+        </div>
 
-      </div>
+        <div className="overflow-hidden flex items-end gap-4 flex-wrap">
+          <motion.h1
+            initial={{ y: 110, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.68, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              fontFamily: "var(--font-bebas, var(--font-syne))",
+              fontSize: "clamp(3.2rem, 15vw, 13rem)",
+              lineHeight: 0.92,
+              letterSpacing: "0.02em",
+              background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            AL AMIEN
+          </motion.h1>
+
+          {/* Availability pill — floats next to title */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.0, duration: 0.5 }}
+            className="glass-card flex items-center gap-2 px-4 py-2 rounded-full mb-4 flex-shrink-0"
+          >
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-xs font-bold uppercase tracking-wider text-green-400">
+              Available
+            </span>
+          </motion.div>
+        </div>
+
+        {/* Tagline row */}
+        <div className="mt-8 flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-12">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.7 }}
+            className="text-lg md:text-xl leading-relaxed max-w-md"
+            style={{ color: "var(--muted)", fontFamily: "var(--font-manrope)" }}
+          >
+            Creative Developer & UI/UX Designer — crafting immersive digital experiences that push the boundaries of the modern web.
+          </motion.p>
+
+          {/* CTA buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.05, duration: 0.6 }}
+            className="flex flex-wrap gap-3 sm:mt-1"
+          >
+            <a 
+              href="#works" 
+              className="btn-primary hover-target py-3 px-6 md:py-4 md:px-8 text-sm md:text-base"
+              style={{ color: theme === "dark" ? "#000" : "#fff" }}
+            >
+              View Work
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+            <a href="#contact" className="btn-outline hover-target">
+              Let's Connect
+            </a>
+          </motion.div>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.6 }}
+          className="absolute bottom-12 right-8 md:right-16 hidden md:flex flex-col items-center gap-3"
+        >
+          <span
+            className="text-xs font-bold uppercase tracking-widest"
+            style={{ color: "var(--muted)", writingMode: "vertical-rl" }}
+          >
+            Scroll Down
+          </span>
+          <div
+            className="w-px h-16"
+            style={{ background: "linear-gradient(to bottom, var(--accent), transparent)" }}
+          />
+        </motion.div>
+      </motion.div>
+
+      {/* Stats bar — bottom */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.15, duration: 0.7 }}
+        className="absolute bottom-0 left-0 right-0 z-10 px-6 md:px-16 py-6"
+        style={{ borderTop: "1px solid var(--border)" }}
+      >
+        <div className="max-w-[1200px] mx-auto flex flex-wrap gap-8 md:gap-16">
+          {[
+            { num: "5+", label: "Years Experience" },
+            { num: "40+", label: "Projects Done" },
+            { num: "20+", label: "Happy Clients" },
+          ].map((stat) => (
+            <div key={stat.label} className="flex flex-col">
+              <span
+                style={{
+                  fontFamily: "var(--font-bebas, var(--font-syne))",
+                  fontSize: "2.4rem",
+                  lineHeight: 1,
+                  background: "linear-gradient(135deg, var(--accent), var(--accent-2))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {stat.num}
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--muted)" }}>
+                {stat.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
     </section>
   );
 }

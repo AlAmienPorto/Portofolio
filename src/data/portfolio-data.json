@@ -1,0 +1,228 @@
+{
+  "profile": {
+    "name": "Jawad Al Amien",
+    "tagline": "Creative Developer & UI/UX Designers",
+    "bio": "As a versatile designer with expertise in Graphic Design, UI/UX Design, and Motion Design, I am dedicated to creating exceptional digital experiences. With advanced proficiency in Adobe Premiere Pro, Photoshop, After Effects, and Figma, I have a proven ability to deliver high-quality work that exceeds client expectations.",
+    "location": "Indonesia",
+    "experience": "5+ Years",
+    "availability": "Open to Projects",
+    "photo": "/uploads/upload_1778401135243.png",
+    "email": "alamienjawad@gmail.com",
+    "whatsapp": "+6285950831387"
+  },
+  "socials": {
+    "whatsapp": "https://wa.me/6285950831387",
+    "linkedin": "#",
+    "instagram": "https://instagram/j.alamien",
+    "github": "https://github.com/AlAmienPorto",
+    "email": "mailto:alamienjawad@gmail.com"
+  },
+  "skills": [
+    {
+      "name": "Next.js",
+      "icon": "nextdotjs"
+    },
+    {
+      "name": "React",
+      "icon": "react"
+    },
+    {
+      "name": "TypeScript",
+      "icon": "typescript"
+    },
+    {
+      "name": "Framer Motion",
+      "icon": "framer"
+    },
+    {
+      "name": "GSAP",
+      "icon": "greensock"
+    },
+    {
+      "name": "Three.js",
+      "icon": "threedotjs"
+    },
+    {
+      "name": "WebGL",
+      "icon": "webgl"
+    },
+    {
+      "name": "Tailwind CSS",
+      "icon": "tailwindcss"
+    },
+    {
+      "name": "Node.js",
+      "icon": "nodedotjs"
+    },
+    {
+      "name": "Figma",
+      "icon": "figma"
+    },
+    {
+      "name": "After Effects",
+      "icon": "adobeaftereffects"
+    },
+    {
+      "name": "Blender",
+      "icon": "blender"
+    },
+    {
+      "name": "Photoshop",
+      "icon": "Photoshop"
+    }
+  ],
+  "services": [
+    {
+      "id": 1,
+      "title": "Creative Development",
+      "description": "Creative development is a strategic process that transforms an initial idea into a polished graphic or video product. It begins with conceptualization and planning, ",
+      "icon": "Code2"
+    },
+    {
+      "id": 2,
+      "title": "Front-End Engineering",
+      "description": "Architecting scalable and performant React applications with Next.js, TypeScript, and state-of-the-art tools.",
+      "icon": "Layout"
+    },
+    {
+      "id": 3,
+      "title": "Motion Design",
+      "description": "Crafting fluid micro-interactions and scroll-linked animations that breathe life into digital products.",
+      "icon": "PenTool"
+    },
+    {
+      "id": 4,
+      "title": "Responsive UX/UI",
+      "description": "Ensuring pixel-perfect implementations that work flawlessly across all devices and screen sizes.",
+      "icon": "MonitorSmartphone"
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "Mobile MU",
+      "category": "Mobile App M-Banking",
+      "year": "2023",
+      "description": "MobileMU is a comprehensive mobile banking application designed exclusively for our cooperative members, bringing a full digital banking experience right to your smartphone.\n\nKey Features:\n\nSeamless Transfers: Easily and securely send money between cooperative accounts or to external local banks.\n\nInstant Payments: Pay your utilities, internet, and other monthly bills in just a few taps.\n\nQuick Purchases: Top up mobile credit, electricity tokens, and e-wallets instantly.\n\nAccount Management: Check your real-time balance, monitor your cooperative savings, and track your daily transaction history.\n\nIt delivers all the convenience and security of a modern m-banking app, simplifying your daily financial tasks while keeping you connected to your cooperative.",
+      "image": "/uploads/upload_1778428818816.png",
+      "link": "#",
+      "tags": [
+        "Flutter"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "PDF Custom",
+      "category": "Tools ",
+      "year": "2026",
+      "description": "Custom PDF File with AI integreted",
+      "image": "/uploads/upload_1778428959468.png",
+      "link": "tools.jalamien.my.id",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Framer Motion"
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Velour",
+      "category": "E-commerce Experience",
+      "year": "2023",
+      "description": "A luxury e-commerce experience with immersive 3D product visualization and smooth checkout flow.",
+      "image": "/projects/3.png",
+      "link": "#",
+      "tags": [
+        "Three.js",
+        "Next.js",
+        "GSAP"
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Alex Chen",
+      "category": "3D Portfolio",
+      "year": "2023",
+      "description": "Award-winning interactive 3D portfolio built with Three.js and custom shader materials.",
+      "image": "/projects/4.png",
+      "link": "#",
+      "tags": [
+        "Three.js",
+        "GLSL",
+        "WebGL"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "quote": "Jawad completely reimagined our digital presence. The scrollytelling experience he built increased our user engagement by 300%.",
+      "author": "Sarah Jenkins",
+      "role": "Creative Director at Nexus Design",
+      "initials": "SJ"
+    },
+    {
+      "id": 2,
+      "quote": "Working with someone who understands both the deep technical aspects and the high-end creative direction is rare. An absolute professional.",
+      "author": "Marcus Aurelius",
+      "role": "Founder, Stoic Tech",
+      "initials": "MA"
+    },
+    {
+      "id": 3,
+      "quote": "The interactive WebGL portfolio he developed for us won Site of the Month. He is a motion wizard.",
+      "author": "Elena Rodriguez",
+      "role": "Lead Producer, Awwwards",
+      "initials": "ER"
+    }
+  ],
+  "experience": [
+    {
+      "id": 1,
+      "company": "GBEE GLOW BEAUTY",
+      "role": "CREATIVE DESIGNER",
+      "duration": "2025 - Present",
+      "logo": "⚡",
+      "description": [
+        "Leading the development of high-end immersive web experiences using Next.js and Three.js.",
+        "Optimizing 3D rendering performance for mobile devices, achieving a consistent 60fps.",
+        "Collaborating with UI designers to implement complex motion sequences and shaders."
+      ]
+    },
+    {
+      "id": 2,
+      "company": "PLAYDESIGN",
+      "role": "Chief Executive Officer",
+      "duration": "2020 - Present",
+      "logo": "🌀",
+      "description": [
+        "Architected scalable React applications for fintech and e-commerce clients.",
+        "Integrated headless CMS solutions and optimized SEO performance by 40%.",
+        "Mentored junior developers in modern CSS-in-JS and animation best practices."
+      ]
+    },
+    {
+      "id": 3,
+      "company": "Batik Luza",
+      "role": "Creative Specialist",
+      "duration": "2024-2025",
+      "logo": "🎨",
+      "description": [
+        "Handled Graphic Design Social Media",
+        "Make Content Planner for Social Media",
+        "Determine the posting date and caption for Instagram social media",
+        "Take and Shoot Video Catalog Product",
+        "Editing Video Catalog Product"
+      ]
+    },
+    {
+      "id": 1778430357842,
+      "company": "Starting Eleven",
+      "role": "Editor",
+      "duration": "2024 - 2025",
+      "description": [
+        "Editing Video "
+      ]
+    }
+  ]
+}

@@ -1,107 +1,249 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { X, Menu, Sun, Moon, Home, User, Layers, Briefcase, Mail } from "lucide-react";
 import Link from "next/link";
+import { useTheme } from "@/lib/theme";
+import { usePortfolioData } from "@/lib/portfolio-context";
 
 const navLinks = [
-  { href: "#home", label: "Home" },
-  { href: "#about", label: "About" },
-  { href: "#services", label: "Services" },
-  { href: "#works", label: "Works" },
-  { href: "#contact", label: "Contact" },
+  { href: "#home", label: "Home", icon: Home },
+  { href: "#about", label: "About", icon: User },
+  { href: "#services", label: "Services", icon: Layers },
+  { href: "#works", label: "Works", icon: Briefcase },
+  { href: "#contact", label: "Contact", icon: Mail },
 ];
 
+import ShineLabel from "@/components/ShineLabel";
+
 export default function Navbar() {
+  const { profile } = usePortfolioData();
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActive] = useState("home");
+  const [scrolled, setScrolled] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      const ids = ["home", "about", "services", "works", "testimonials", "contact"];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el) {
+          const { top, bottom } = el.getBoundingClientRect();
+          if (top <= 160 && bottom >= 160) { setActive(id); break; }
+        }
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const navBg = scrolled
+    ? theme === "dark"
+      ? "rgba(5,5,16,0.85)"
+      : "rgba(244,243,255,0.88)"
+    : "transparent";
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-40 mix-blend-difference">
-        <div className="text-white font-bold text-xl uppercase tracking-widest">
-        </div>
-        <button
-          onClick={() => setIsOpen(true)}
-          className="text-white hover-target p-2 focus:outline-none"
-        >
-          <Menu size={32} />
-        </button>
-      </nav>
+      {/* ── TOP NAV BAR ── */}
+      <motion.nav
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed top-0 left-0 w-full z-50 transition-all duration-300"
+        style={{
+          backgroundColor: navBg,
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
+          {/* Logo */}
+          <Link href="#home" className="hover-target flex items-center gap-2">
+            <ShineLabel
+              text="Al Amien's Portfolio"
+              fontSize="text-[10px] sm:text-xs md:text-sm"
+              className="!tracking-[0.05em] sm:!tracking-[0.1em] !font-black"
+            />
+          </Link>
 
+          {/* Desktop links */}
+
+          <ul className="hidden md:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.href.replace("#", "");
+              const Icon = link.icon;
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="hover-target relative px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-full transition-all duration-300 flex items-center gap-2"
+                    style={{
+                      color: isActive ? "var(--accent)" : "var(--muted)",
+                      backgroundColor: isActive ? "var(--accent-glow)" : "transparent",
+                    }}
+                  >
+                    {/* Render icon if active */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          initial={{ scale: 0, opacity: 0, width: 0, marginRight: 0 }}
+                          animate={{ scale: 1, opacity: 1, width: "auto", marginRight: 4 }}
+                          exit={{ scale: 0, opacity: 0, width: 0, marginRight: 0 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                          className="flex items-center justify-center p-1 rounded-full overflow-hidden"
+                          style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}
+                        >
+                          <Icon size={14} strokeWidth={3} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {link.label}
+
+                    {/* Active border indicator */}
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-indicator"
+                        className="absolute inset-0 rounded-full"
+                        style={{ border: "1px solid var(--accent)", zIndex: -1 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Right actions */}
+          <div className="flex items-center gap-3">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="hover-target theme-toggle"
+              title={theme === "dark" ? "Light Mode" : "Dark Mode"}
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+
+            {/* CTA — desktop */}
+            <a
+              href="#contact"
+              className="inline-flex hover-target btn-primary py-1 px-2.5 md:py-2 md:px-5 text-[9px] md:text-xs whitespace-nowrap"
+              style={{ color: theme === "dark" ? "#000" : "#fff" }}
+            >
+              Let's Talk
+            </a>
+
+            {/* Hamburger — mobile */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="md:hidden hover-target p-2 rounded-xl"
+              style={{ border: "1px solid var(--border)", color: "var(--fg)" }}
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* ── MOBILE FULLSCREEN MENU ── */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)" }}
-            animate={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
-            exit={{ clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" }}
-            transition={{ duration: 0.8, ease: [0.77, 0, 0.175, 1] }}
-            className="fixed inset-0 z-50 bg-zinc-900 text-white flex flex-col justify-between p-6 md:p-10"
+            initial={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
+            animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
+            exit={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
+            transition={{ duration: 0.65, ease: [0.77, 0, 0.175, 1] }}
+            className="fixed inset-0 z-[60] flex flex-col"
+            style={{ backgroundColor: "var(--surface)" }}
           >
-            <div className="flex justify-between items-center">
-              <div className="font-bold text-xl uppercase tracking-widest">
-                IfalEX
-              </div>
+            {/* Header */}
+            <div
+              className="flex justify-between items-center px-6 py-5"
+              style={{ borderBottom: "1px solid var(--border)" }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-bebas, var(--font-syne))",
+                  fontSize: "1.3rem",
+                  letterSpacing: "0.08em",
+                  background: "linear-gradient(135deg, var(--accent), var(--accent-2))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                MENU
+              </span>
               <button
                 onClick={() => setIsOpen(false)}
-                className="hover-target p-2 focus:outline-none transition-transform hover:rotate-90"
+                className="hover-target p-2 rounded-xl transition-transform hover:rotate-90"
+                style={{ border: "1px solid var(--border)", color: "var(--fg)" }}
               >
-                <X size={32} />
+                <X size={20} />
               </button>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-between h-full py-20 px-4 md:px-20">
-              <ul className="flex flex-col gap-4 md:gap-8 justify-center h-full">
-                {navLinks.map((link, i) => (
-                  <motion.li
+            {/* Links */}
+            <div className="flex-1 flex flex-col justify-center px-8">
+              {navLinks.map((link, i) => {
+                const Icon = link.icon;
+                return (
+                  <motion.div
                     key={link.href}
-                    initial={{ y: 50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3 + i * 0.1, duration: 0.5, ease: "easeOut" }}
-                    onClick={() => setIsOpen(false)}
-                    className="overflow-hidden"
+                    initial={{ x: -40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 + i * 0.07, ease: "easeOut" }}
                   >
                     <Link
                       href={link.href}
-                      className="text-5xl md:text-8xl uppercase font-black hover:text-zinc-500 transition-colors inline-block hover-target"
+                      onClick={() => setIsOpen(false)}
+                      className="hover-target flex items-center gap-4 py-4 group"
+                      style={{ borderBottom: "1px solid var(--border)" }}
                     >
-                      {link.label}
+                      <span
+                        className="text-xs font-bold tabular-nums flex items-center gap-3"
+                        style={{ color: "var(--accent)", fontFamily: "var(--font-manrope)" }}
+                      >
+                        0{i + 1}
+                        <span className="flex items-center justify-center p-1.5 rounded-full" style={{ backgroundColor: "var(--accent-glow)", color: "var(--accent)" }}>
+                          <Icon size={16} strokeWidth={2.5} />
+                        </span>
+                      </span>
+                      <span
+                        className="text-4xl uppercase font-black tracking-tighter group-hover:translate-x-2 transition-transform"
+                        style={{ fontFamily: "var(--font-bebas, var(--font-syne))", color: "var(--fg)", letterSpacing: "0.03em" }}
+                      >
+                        {link.label}
+                      </span>
                     </Link>
-                  </motion.li>
-                ))}
-              </ul>
-
-              <div className="flex flex-col justify-end gap-12 max-w-sm pb-10">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.8 }}
-                >
-                  <h3 className="text-zinc-500 uppercase text-sm font-bold tracking-widest mb-4">
-                    About
-                  </h3>
-                  <p className="text-lg leading-relaxed">
-                    A world-class Creative Developer specializing in Next.js, Motion,
-                    and web interactions crafting high-end digital experiences.
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.9 }}
-                >
-                  <h3 className="text-zinc-500 uppercase text-sm font-bold tracking-widest mb-4">
-                    Socials
-                  </h3>
-                  <div className="flex gap-6">
-                    <a href="https://wa.me/6285656969189" target="_blank" rel="noreferrer" className="hover-target hover:text-zinc-400 underline underline-offset-4">WhatsApp</a>
-                    <a href="#" className="hover-target hover:text-zinc-400 underline underline-offset-4">LinkedIn</a>
-                    <a href="#" className="hover-target hover:text-zinc-400 underline underline-offset-4">Instagram</a>
-                  </div>
-                </motion.div>
-              </div>
+                  </motion.div>
+                )
+              })}
             </div>
+
+            {/* Footer socials */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="px-8 py-8"
+              style={{ borderTop: "1px solid var(--border)" }}
+            >
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--muted)" }}>Connect</p>
+              <div className="flex gap-6">
+                {["WhatsApp", "LinkedIn", "Instagram"].map((s) => (
+                  <a key={s} href="#" className="hover-target text-sm font-bold underline underline-offset-4" style={{ color: "var(--fg)" }}>
+                    {s}
+                  </a>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

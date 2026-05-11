@@ -1,25 +1,93 @@
 @import "tailwindcss";
 
+/* ============================================
+   DESIGN TOKENS — Dark Cosmic Indigo Theme
+   ============================================ */
 @theme {
-  --color-background: #000000;
-  --color-foreground: #ffffff;
+  --color-background: #050510;
+  --color-foreground: #f4f3ff;
+  --color-surface: #0d0d2b;
+  --color-surface-2: #111132;
+  --color-accent: #bef264;
+  --color-accent-2: #ff6fbb;
+  --color-accent-lime: #bef264;
+  --color-accent-glow: rgba(190, 242, 100, 0.3);
+  --color-muted: #8a88a3;
+  --color-border: rgba(190, 242, 100, 0.15);
 }
 
-:root {
-  --background: #000000;
-  --foreground: #ffffff;
+/* ── DARK MODE (default) ── */
+:root,
+[data-theme="dark"] {
+  --bg: #050510;
+  --fg: #f4f3ff;
+  --surface: #0d0d2b;
+  --surface-2: #111132;
+  --accent: #bef264;
+  --accent-2: #95ff6f;
+  --accent-lime: #bef264;
+  --accent-glow: rgba(190, 242, 100, 0.3);
+  --accent-lime-glow: rgba(190, 242, 100, 0.15);
+  --muted: #8a88a3;
+  --border: rgba(190, 242, 100, 0.15);
+  --card-bg: rgba(13, 13, 43, 0.6);
+  --card-border: rgba(190, 242, 100, 0.1);
+  --input-bg: rgba(5, 5, 16, 0.6);
+  --shadow: rgba(0, 0, 0, 0.4);
+  --shadow-lime: rgba(190, 242, 100, 0.2);
+  --overlay-bg: rgba(5, 5, 16, 0.85);
+  --shine-gradient: linear-gradient(120deg, rgba(181, 255, 109, 1) 0%, rgba(181, 255, 109, 1) 40%, rgba(255, 255, 255, 1) 50%, rgba(181, 255, 109, 1) 60%, rgba(181, 255, 109, 1) 100%);
+}
+
+/* ── LIGHT MODE ── */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --fg: #050510;
+  --surface: #f4f3ff;
+  --surface-2: #eeeeff;
+  --accent: #15803d;
+  /* Dark Forest Green for readability */
+  --accent-2: #a3d93f;
+  --accent-lime: #166534;
+  --accent-glow: rgba(21, 128, 61, 0.15);
+  --accent-lime-glow: rgba(22, 101, 52, 0.1);
+  --muted: #4b5563;
+  --border: rgba(21, 128, 61, 0.1);
+  --overlay-bg: rgba(255, 255, 255, 0.8);
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(21, 128, 61, 0.08);
+  --input-bg: rgba(243, 244, 246, 0.8);
+  --shadow: rgba(0, 0, 0, 0.05);
+  --shadow-lime: rgba(21, 128, 61, 0.05);
+  --shine-gradient: linear-gradient(120deg, rgba(21, 128, 61, 1) 0%, rgba(21, 128, 61, 1) 40%, rgba(181, 255, 109, 1) 50%, rgba(21, 128, 61, 1) 60%, rgba(21, 128, 61, 1) 100%);
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg);
+  color: var(--fg);
   font-family: var(--font-manrope), sans-serif;
   overflow-x: hidden;
-  /* hide default scrollbar for aesthetics */
   -ms-overflow-style: none;
-  /* IE and Edge */
   scrollbar-width: none;
-  /* Firefox */
+  line-height: 1.6;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 body::-webkit-scrollbar {
@@ -33,37 +101,348 @@ h4,
 h5,
 h6 {
   font-family: var(--font-syne), sans-serif;
+  line-height: 1.1;
 }
 
-/* Custom Cursor Base Styles */
-* {
-  cursor: none !important;
+/* ============================================
+   CURSOR — Force system cursor visible everywhere
+   Overrides any library (Lenis, Framer, etc) injection
+   ============================================ */
+html,
+html *,
+html *::before,
+html *::after {
+  cursor: auto !important;
 }
 
-.custom-cursor {
+/* Interactive elements use pointer */
+a,
+button,
+[role="button"],
+label[for],
+.hover-target,
+select,
+summary {
+  cursor: pointer !important;
+}
+
+/* Text inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+textarea {
+  cursor: text !important;
+}
+
+/* Drag scroll container */
+.h-scroll-container {
+  cursor: grab !important;
+}
+
+.h-scroll-container:active {
+  cursor: grabbing !important;
+}
+
+/* ============================================
+   NOISE TEXTURE OVERLAY
+   ============================================ */
+.noise-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  background-color: white;
-  border-radius: 50%;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: difference;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
 }
 
-.custom-cursor.hovered {
-  width: 60px;
-  height: 60px;
-  background-color: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(2px);
-  mix-blend-mode: normal;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+/* ============================================
+   ANIMATED MESH GRADIENT BACKGROUND
+   ============================================ */
+.mesh-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.mesh-gradient::before {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 111, 255, 0.1) 0%, transparent 70%);
+  top: -100px;
+  left: -100px;
+  animation: meshFloat1 12s ease-in-out infinite alternate;
+}
+
+.mesh-gradient::after {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 111, 187, 0.07) 0%, transparent 70%);
+  bottom: -100px;
+  right: -100px;
+  animation: meshFloat2 15s ease-in-out infinite alternate;
+}
+
+[data-theme="light"] .mesh-gradient::before {
+  background: radial-gradient(circle, rgba(91, 78, 218, 0.08) 0%, transparent 70%);
+}
+
+[data-theme="light"] .mesh-gradient::after {
+  background: radial-gradient(circle, rgba(217, 63, 138, 0.06) 0%, transparent 70%);
+}
+
+@keyframes meshFloat1 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+
+  to {
+    transform: translate(120px, 80px) scale(1.2);
+  }
+}
+
+@keyframes meshFloat2 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+
+  to {
+    transform: translate(-80px, -60px) scale(1.15);
+  }
+}
+
+/* ============================================
+   GLASS CARD
+   ============================================ */
+.glass-card {
+  background: var(--card-bg, rgba(13, 13, 43, 0.6));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border, rgba(124, 111, 255, 0.15));
+  border-radius: 16px;
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+/* ============================================
+   GRADIENT TEXT
+   ============================================ */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-lime) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+/* ============================================
+   SECTION LABEL
+   ============================================ */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-family: var(--font-manrope), sans-serif;
+}
+
+.section-label::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-lime) 100%);
+  color: var(--fg) !important;
+  font-weight: 700;
+  font-size: 0.75rem;
+  @media (min-width: 768px) {
+    padding: 14px 32px;
+    font-size: 0.875rem;
+  }
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 100px;
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .btn-primary {
+  color: #000000 !important;
+}
+
+[data-theme="light"] .btn-primary {
+  color: #ffffff !important;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(124, 111, 255, 0.45);
+}
+
+[data-theme="light"] .btn-primary:hover {
+  box-shadow: 0 0 30px rgba(91, 78, 218, 0.35);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: transparent;
+  color: var(--fg);
+  font-weight: 700;
+  font-size: 0.75rem;
+  @media (min-width: 768px) {
+    padding: 12px 28px;
+    font-size: 0.875rem;
+  }
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ============================================
+   THEME TOGGLE BUTTON
+   ============================================ */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+/* ============================================
+   SCROLLBAR & SCROLL HELPERS
+   ============================================ */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.h-scroll-container {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  user-select: none;
+}
+
+.h-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   KEYFRAMES
+   ============================================ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(124, 111, 255, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(124, 111, 255, 0.6);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
 }
 
 .clip-reveal {
   clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0% 100%);
+}
+
+@keyframes shine {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.animate-shine {
+  animation-name: shine;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
