@@ -4,17 +4,18 @@ import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { ArrowUpRight, ExternalLink, X, Tag, Calendar } from "lucide-react";
-import { usePortfolioData, type Project } from "@/lib/portfolio-context";
+import { usePortfolioData, type Project, type CreativeWork } from "@/lib/portfolio-context";
 
 const PROJECT_COLORS = ["#7c6fff", "#ff6fbb", "#6ff0ff", "#ffb86f", "#4ade80", "#f472b6"];
 
 import ShineLabel from "@/components/ShineLabel";
 
 export default function Projects() {
-  const { projects } = usePortfolioData();
+  const { projects, creativeWorks } = usePortfolioData();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedCreativeWork, setSelectedCreativeWork] = useState<CreativeWork | null>(null);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
   const dragDistance = useRef(0);
@@ -284,6 +285,139 @@ export default function Projects() {
           </>
         )}
       </AnimatePresence>
+      {/* ── CREATIVE WORKS ── */}
+      {creativeWorks && creativeWorks.length > 0 && (
+        <div className="max-w-7xl mx-auto px-6 md:px-16 mt-32">
+          <div className="mb-12">
+            <motion.h3
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              style={{
+                fontFamily: "var(--font-bebas, var(--font-syne))",
+                fontSize: "clamp(2rem, 5vw, 4rem)",
+                letterSpacing: "0.03em",
+                color: "var(--fg)",
+                lineHeight: 1,
+              }}
+            >
+              CREATIVE WORKS
+            </motion.h3>
+            <p className="text-sm font-bold uppercase tracking-widest mt-2" style={{ color: "var(--muted)" }}>
+              Graphic Design & Visual Arts
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {creativeWorks.map((work, index) => (
+              <CreativeWorkCard key={work.id} work={work} index={index} onClick={() => setSelectedCreativeWork(work)} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── CREATIVE WORK DETAIL MODAL ── */}
+      <AnimatePresence>
+        {selectedCreativeWork && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedCreativeWork(null)}
+              className="fixed inset-0 z-[70]"
+              style={{ backgroundColor: "var(--overlay-bg)", backdropFilter: "blur(12px)" }}
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.93, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="fixed z-[80] inset-4 md:inset-[15%] rounded-2xl overflow-hidden flex flex-row"
+              style={{
+                backgroundColor: "var(--surface)",
+                border: `1px solid var(--border)`,
+                maxHeight: "90vh",
+              }}
+            >
+              {/* Image side */}
+              <div className="relative w-1/2 flex-shrink-0" style={{ minHeight: "250px" }}>
+                <Image
+                  src={selectedCreativeWork.image}
+                  alt={selectedCreativeWork.client}
+                  fill
+                  className="object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(to right, transparent 60%, var(--surface))`,
+                  }}
+                />
+              </div>
+
+              {/* Content side */}
+              <div className="flex-1 flex flex-col p-8 md:p-10 overflow-y-auto">
+                <div className="flex justify-end mb-6">
+                  <button
+                    onClick={() => setSelectedCreativeWork(null)}
+                    className="hover-target w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                    style={{ border: "1px solid var(--border)", color: "var(--fg)" }}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                <span
+                  className="text-xs font-bold uppercase tracking-widest mb-3 inline-block px-3 py-1 rounded-full w-fit"
+                  style={{
+                    backgroundColor: "var(--accent-glow)",
+                    color: "var(--accent)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  {selectedCreativeWork.program}
+                </span>
+
+                <h2
+                  className="mb-2"
+                  style={{
+                    fontFamily: "var(--font-bebas, var(--font-syne))",
+                    fontSize: "clamp(2.5rem, 5vw, 4rem)",
+                    letterSpacing: "0.03em",
+                    lineHeight: 1,
+                    color: "var(--fg)",
+                  }}
+                >
+                  {selectedCreativeWork.client}
+                </h2>
+                
+                <p className="text-sm font-bold uppercase tracking-widest mb-6" style={{ color: "var(--muted)" }}>
+                  {selectedCreativeWork.role}
+                </p>
+
+                <p
+                  className="text-base leading-relaxed mb-8 whitespace-pre-wrap"
+                  style={{ color: "var(--muted)", fontFamily: "var(--font-manrope)" }}
+                >
+                  {selectedCreativeWork.description}
+                </p>
+
+                <div className="flex items-center gap-3 mt-auto">
+                  <Calendar size={14} style={{ color: "var(--accent)" }} />
+                  <span className="text-sm font-bold" style={{ color: "var(--muted)" }}>
+                    Year: <span style={{ color: "var(--fg)" }}>{selectedCreativeWork.year || "-"}</span>
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -396,6 +530,60 @@ function ProjectCard({
               {project.title}
             </h3>
           </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function CreativeWorkCard({ work, index, onClick }: { work: CreativeWork; index: number; onClick: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      onClick={onClick}
+      className="glass-card overflow-hidden rounded-2xl cursor-pointer hover-target group"
+      style={{ border: "1px solid var(--border)" }}
+    >
+      <div className="relative w-full overflow-hidden" style={{ height: "220px" }}>
+        {work.image ? (
+          <Image
+            src={work.image}
+            alt={work.client}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        ) : (
+          <div className="w-full h-full" style={{ backgroundColor: "var(--surface-2)" }} />
+        )}
+      </div>
+
+      <div className="p-6 relative">
+        {/* Top: Program */}
+        {work.program && (
+          <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: "var(--accent)" }}>
+            {work.program}
+          </p>
+        )}
+        
+        {/* Middle: Client */}
+        <h4 style={{ fontFamily: "var(--font-bebas, var(--font-syne))", fontSize: "2rem", color: "var(--fg)", lineHeight: 1, marginBottom: "4px" }}>
+          {work.client}
+        </h4>
+        
+        {/* Bottom: Role & Year */}
+        <div className="flex justify-between items-end mt-2">
+          <p className="text-sm font-bold" style={{ color: "var(--muted)" }}>
+            {work.role}
+          </p>
+          {work.year && (
+            <div className="px-3 py-1 rounded-full text-[10px] font-bold" style={{ backgroundColor: "var(--surface)", color: "var(--muted)", border: "1px solid var(--border)" }}>
+              {work.year}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

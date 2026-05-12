@@ -64,6 +64,16 @@ export interface Experience {
   description: string[];
 }
 
+export interface CreativeWork {
+  id: number;
+  client: string;
+  role: string;
+  program: string;
+  description: string;
+  image: string;
+  year: string;
+}
+
 export interface PortfolioData {
   profile: PortfolioProfile;
   socials: PortfolioSocials;
@@ -72,6 +82,7 @@ export interface PortfolioData {
   projects: Project[];
   testimonials: Testimonial[];
   experience: Experience[];
+  creativeWorks: CreativeWork[];
 }
 
 // ─── Default fallback data ────────────────────────────────
@@ -108,6 +119,7 @@ const defaultData: PortfolioData = {
   projects: [],
   testimonials: [],
   experience: [],
+  creativeWorks: [],
 };
 
 

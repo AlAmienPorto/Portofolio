@@ -42,8 +42,8 @@ export default function Navbar() {
 
   const navBg = scrolled
     ? theme === "dark"
-      ? "rgba(5,5,16,0.85)"
-      : "rgba(244,243,255,0.88)"
+      ? "rgba(5,5,16,0.60)"
+      : "rgba(244,243,255,0.60)"
     : "transparent";
 
   return (
@@ -81,24 +81,24 @@ export default function Navbar() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="hover-target relative px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-full transition-all duration-300 flex items-center gap-2"
-                    style={{
-                      color: isActive ? "var(--accent)" : "var(--muted)",
-                      backgroundColor: isActive ? "var(--accent-glow)" : "transparent",
-                    }}
+                    className={`hover-target relative px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-full transition-all duration-300 flex items-center gap-2 ${
+                      isActive
+                        ? "text-[var(--accent)] bg-[var(--accent-glow)]"
+                        : "text-[var(--muted)] hover:text-[var(--accent-lime)] hover:bg-[var(--accent-lime-glow)]"
+                    }`}
                   >
                     {/* Render icon if active */}
                     <AnimatePresence>
                       {isActive && (
                         <motion.div
                           initial={{ scale: 0, opacity: 0, width: 0, marginRight: 0 }}
-                          animate={{ scale: 1, opacity: 1, width: "auto", marginRight: 4 }}
+                          animate={{ scale: 1, opacity: 1, width: 22, marginRight: 4 }}
                           exit={{ scale: 0, opacity: 0, width: 0, marginRight: 0 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                          className="flex items-center justify-center p-1 rounded-full overflow-hidden"
+                          transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.5 }}
+                          className="flex items-center justify-center p-1 rounded-full overflow-hidden whitespace-nowrap"
                           style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}
                         >
-                          <Icon size={14} strokeWidth={3} />
+                          <Icon size={14} strokeWidth={3} className="shrink-0" />
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -111,7 +111,7 @@ export default function Navbar() {
                         layoutId="nav-indicator"
                         className="absolute inset-0 rounded-full"
                         style={{ border: "1px solid var(--accent)", zIndex: -1 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.5 }}
                       />
                     )}
                   </Link>

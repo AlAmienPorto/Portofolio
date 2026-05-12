@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { User, Briefcase, Code2, MessageSquare, Settings, LogOut, Plus, Trash2, Save, Eye, Upload, X, GripVertical, Menu } from "lucide-react";
+import { User, Briefcase, Code2, MessageSquare, Settings, LogOut, Plus, Trash2, Save, Eye, Upload, X, GripVertical, Menu, Palette } from "lucide-react";
 
 const ADMIN_PASSWORD = "jawad2026";
 
 // ─── Types ───────────────────────────────────────────────
-type Tab = "profile" | "experience" | "projects" | "skills" | "services" | "testimonials";
+type Tab = "profile" | "experience" | "projects" | "creative" | "skills" | "services" | "testimonials";
 
 // ─── Main Admin Page ─────────────────────────────────────
 export default function AdminPage() {
@@ -63,6 +63,7 @@ export default function AdminPage() {
     { id: "profile" as Tab, label: "Profile", icon: User },
     { id: "experience" as Tab, label: "Experience", icon: Briefcase },
     { id: "projects" as Tab, label: "Projects", icon: Code2 },
+    { id: "creative" as Tab, label: "Creative", icon: Palette },
     { id: "skills" as Tab, label: "Skills", icon: Settings },
     { id: "services" as Tab, label: "Services", icon: Settings },
     { id: "testimonials" as Tab, label: "Testimonials", icon: MessageSquare },
@@ -151,6 +152,7 @@ export default function AdminPage() {
             {activeTab === "profile" && <ProfileTab data={data} setData={setData} />}
             {activeTab === "experience" && <ExperienceTab data={data} setData={setData} />}
             {activeTab === "projects" && <ProjectsTab data={data} setData={setData} />}
+            {activeTab === "creative" && <CreativeWorksTab data={data} setData={setData} />}
             {activeTab === "skills" && <SkillsTab data={data} setData={setData} />}
             {activeTab === "services" && <ServicesTab data={data} setData={setData} />}
             {activeTab === "testimonials" && <TestimonialsTab data={data} setData={setData} />}
@@ -669,7 +671,7 @@ function ExperienceTab({ data, setData }: any) {
                     style={{ ...fieldStyle, resize: "vertical" } as any} 
                     rows={4} 
                     value={(exp.description || []).join("\n")} 
-                    onChange={(e) => updateExp(exp.id, "description", e.target.value.split("\n").filter(Boolean))} 
+                    onChange={(e) => updateExp(exp.id, "description", e.target.value.split("\n"))} 
                     placeholder="Bullet points..."
                   />
                 </div>
@@ -681,4 +683,115 @@ function ExperienceTab({ data, setData }: any) {
     </div>
   );
 }
+// ─── Creative Works Tab ───────────────────────────────────────
+function CreativeWorksTab({ data, setData }: any) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [activeWorkId, setActiveWorkId] = useState<number | null>(null);
 
+  const addWork = () => {
+    const newWork = { id: Date.now(), client: "Client Name", role: "UI/UX", program: "Figma", year: "2026", description: "", image: "" };
+    setData((d: any) => ({ ...d, creativeWorks: [...(d.creativeWorks || []), newWork] }));
+  };
+
+  const updateWork = (id: number, key: string, val: any) =>
+    setData((d: any) => ({ ...d, creativeWorks: d.creativeWorks.map((w: any) => w.id === id ? { ...w, [key]: val } : w) }));
+
+  const deleteWork = (id: number) =>
+    setData((d: any) => ({ ...d, creativeWorks: d.creativeWorks.filter((w: any) => w.id !== id) }));
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || activeWorkId === null) return;
+    
+    const form = new FormData();
+    form.append("file", file);
+    
+    const res = await fetch("/api/upload", { method: "POST", body: form });
+    if (res.ok) {
+      const { url } = await res.json();
+      updateWork(activeWorkId, "image", url);
+    }
+    setActiveWorkId(null);
+  };
+
+  const triggerUpload = (id: number) => {
+    setActiveWorkId(id);
+    fileRef.current?.click();
+  };
+
+  return (
+    <div>
+      <input ref={fileRef} type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
+      
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+        <h1 style={{ ...sectionTitle, marginBottom: 0 }}>Creative Works</h1>
+        <button onClick={addWork} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "linear-gradient(135deg,var(--accent),#9b8bff)", color: "white", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
+          <Plus size={14} /> Add Work
+        </button>
+      </div>
+      {(data.creativeWorks || []).map((work: any) => (
+        <div key={work.id} style={cardStyle}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
+            <span style={{ fontWeight: 800, fontSize: "1rem", color: "#f0eeff" }}>{work.client}</span>
+            <button onClick={() => deleteWork(work.id)} style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", color: "#f87171", borderRadius: "8px", padding: "4px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontSize: "0.75rem", fontWeight: 700 }}>
+              <Trash2 size={12} /> Delete
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-6 items-start">
+            {/* Thumbnail Preview/Upload */}
+            <div>
+              <label style={labelStyle}>Thumbnail</label>
+              <div 
+                style={{ 
+                  width: "100%", 
+                  aspectRatio: "16/9", 
+                  backgroundColor: "rgba(5,5,16,0.5)", 
+                  border: "1px solid var(--border)", 
+                  borderRadius: "10px", 
+                  overflow: "hidden", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center",
+                  marginBottom: "8px"
+                }}
+              >
+                {work.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={work.image} alt="Thumbnail" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <Palette size={24} style={{ color: "var(--muted)" }} />
+                )}
+              </div>
+              <button 
+                onClick={() => triggerUpload(work.id)}
+                style={{ width: "100%", padding: "8px", background: "var(--accent-lime-glow)", color: "var(--accent)", border: "1px solid var(--accent-glow)", borderRadius: "8px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
+              >
+                <Upload size={12} /> Upload Image
+              </button>
+            </div>
+
+            {/* Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { key: "client", label: "Client Name" }, 
+                { key: "role", label: "Role (e.g. UI/UX)" },
+                { key: "program", label: "Program (e.g. Figma)" },
+                { key: "year", label: "Year" },
+              ].map(({ key, label }) => (
+                <div key={key}>
+                  <label style={labelStyle}>{label}</label>
+                  <input style={fieldStyle} value={work[key] || ""} onChange={(e) => updateWork(work.id, key, e.target.value)} />
+                </div>
+              ))}
+              <div style={{ gridColumn: "1 / -1" }}>
+                <label style={labelStyle}>Description (Shown when expanded)</label>
+                <textarea style={{ ...fieldStyle, resize: "vertical" } as any} rows={2} value={work.description || ""} onChange={(e) => updateWork(work.id, "description", e.target.value)} />
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

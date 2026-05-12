@@ -46,11 +46,11 @@ export default function BottomNav() {
               onClick={() => setActive(item.id)}
             >
               <div 
-                className={`p-2 rounded-xl transition-all duration-300 ${isActive ? 'scale-110' : 'opacity-50 group-hover:opacity-100'}`}
-                style={{ 
-                  backgroundColor: isActive ? "var(--accent-lime-glow)" : "transparent",
-                  color: isActive ? "var(--accent-lime)" : "var(--fg)"
-                }}
+                className={`p-2 rounded-xl transition-all duration-300 ${
+                  isActive 
+                    ? 'scale-110 text-[var(--accent-lime)] bg-[var(--accent-lime-glow)]' 
+                    : 'opacity-50 group-hover:opacity-100 text-[var(--fg)] group-hover:text-[var(--accent-lime)] group-hover:bg-[var(--accent-lime-glow)]'
+                }`}
               >
                 <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               </div>
@@ -59,6 +59,7 @@ export default function BottomNav() {
                   layoutId="active-dot"
                   className="w-1 h-1 rounded-full bg-lime-400"
                   style={{ backgroundColor: "var(--accent-lime)" }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.5 }}
                 />
               )}
             </a>
