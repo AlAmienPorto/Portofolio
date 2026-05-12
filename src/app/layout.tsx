@@ -22,13 +22,36 @@ const bebasNeue = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: "Jawad Al Amien | Creative Developer",
+  title: "Jawad Al Amien | Creative Developer & UI/UX Designer",
   description: "Premium portfolio of Jawad Al Amien — Creative Developer & UI/UX Designer specializing in immersive web experiences, motion design, and scalable front-end engineering.",
-  keywords: ["Creative Developer", "UI/UX Designer", "Next.js", "Motion Design", "Portfolio", "Indonesia"],
+  keywords: ["Jawad Al Amien", "Creative Developer", "UI/UX Designer", "Next.js", "React", "Motion Design", "Framer Motion", "Portfolio", "Indonesia", "Graphic Design"],
+  authors: [{ name: "Jawad Al Amien" }],
+  creator: "Jawad Al Amien",
   openGraph: {
     title: "Jawad Al Amien | Creative Developer",
     description: "Immersive digital experiences that push the boundaries of the modern web.",
+    url: "https://jawadalamien.com",
+    siteName: "Jawad Al Amien Portfolio",
+    images: [
+      {
+        url: "/uploads/profile.png",
+        width: 1200,
+        height: 630,
+        alt: "Jawad Al Amien - Portfolio Preview",
+      },
+    ],
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Jawad Al Amien | Creative Developer",
+    description: "Immersive digital experiences that push the boundaries of the modern web.",
+    images: ["/uploads/profile.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
