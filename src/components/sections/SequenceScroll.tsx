@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { usePortfolioData } from "@/lib/portfolio-context";
 import { useTheme } from "@/lib/theme";
+import ScrambleText from "@/components/ScrambleText";
 
 export default function Hero() {
   const { profile } = usePortfolioData();
@@ -64,7 +65,7 @@ export default function Hero() {
               color: "var(--fg)",
             }}
           >
-            JAWAD
+            <ScrambleText text="JAWAD" delay={600} speed={50} />
           </motion.h1>
         </div>
 
@@ -78,12 +79,19 @@ export default function Hero() {
               fontSize: "clamp(3.2rem, 15vw, 13rem)",
               lineHeight: 0.92,
               letterSpacing: "0.02em",
-              background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
             }}
           >
-            AL AMIEN
+            <ScrambleText
+              text="AL AMIEN"
+              delay={900}
+              speed={50}
+              style={{
+                background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            />
           </motion.h1>
 
           {/* Availability pill — floats next to title */}
