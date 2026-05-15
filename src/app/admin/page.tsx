@@ -70,10 +70,10 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row" style={{ backgroundColor: "#050510", color: "#f0eeff", fontFamily: "var(--font-manrope, sans-serif)" }}>
+    <div className="min-h-screen flex flex-col md:flex-row" style={{ backgroundColor: "var(--background)", color: "var(--foreground)", fontFamily: "var(--font-manrope, sans-serif)" }}>
       {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b z-40 relative" style={{ borderColor: "var(--accent-lime-glow)", backgroundColor: "#0d0d2b" }}>
-        <div style={{ background: "linear-gradient(135deg,var(--accent),var(--accent-lime))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontWeight: 900, fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+      <div className="md:hidden flex items-center justify-between p-4 border-b z-40 sticky top-0" style={{ borderColor: "var(--border)", backgroundColor: "var(--sidebar)" }}>
+        <div style={{ background: "var(--primary)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontWeight: 900, fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
           Admin CPanel
         </div>
         <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-white">
@@ -90,13 +90,13 @@ export default function AdminPage() {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 md:relative md:translate-x-0 flex-shrink-0 flex flex-col ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`} style={{ backgroundColor: "#0d0d2b", borderRight: "1px solid var(--accent-lime-glow)" }}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 md:relative md:translate-x-0 flex-shrink-0 flex flex-col ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`} style={{ backgroundColor: "var(--sidebar)", borderRight: "1px solid var(--border)" }}>
         {/* Logo */}
-        <div className="hidden md:block px-6 py-6" style={{ borderBottom: "1px solid var(--accent-lime-glow)" }}>
-          <div style={{ background: "linear-gradient(135deg,var(--accent),var(--accent-lime))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontWeight: 900, fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+        <div className="hidden md:block px-6 py-6" style={{ borderBottom: "1px solid var(--border)" }}>
+          <div style={{ background: "var(--primary)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontWeight: 900, fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
             Admin CPanel
           </div>
-          <p style={{ color: "#4a4870", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Portfolio Manager</p>
+          <p style={{ color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Portfolio Manager</p>
         </div>
 
         {/* Nav */}
@@ -107,9 +107,9 @@ export default function AdminPage() {
               onClick={() => { setActiveTab(tab.id); setIsSidebarOpen(false); }}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all"
               style={{
-                backgroundColor: activeTab === tab.id ? "var(--accent-lime-glow)" : "transparent",
-                color: activeTab === tab.id ? "var(--accent)" : "var(--muted)",
-                border: activeTab === tab.id ? "1px solid var(--accent-glow)" : "1px solid transparent",
+                backgroundColor: activeTab === tab.id ? "var(--accent)" : "transparent",
+                color: activeTab === tab.id ? "var(--accent-foreground)" : "var(--muted-foreground)",
+                border: activeTab === tab.id ? "1px solid var(--border)" : "1px solid transparent",
                 fontWeight: 700, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.08em",
               }}
             >
@@ -120,25 +120,25 @@ export default function AdminPage() {
         </nav>
 
         {/* Actions */}
-        <div className="p-4 flex flex-col gap-2" style={{ borderTop: "1px solid var(--accent-lime-glow)" }}>
+        <div className="p-4 flex flex-col gap-2" style={{ borderTop: "1px solid var(--border)" }}>
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 16px", background: "linear-gradient(135deg,var(--accent),var(--accent-lime))", color: "black", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", cursor: "pointer", opacity: saving ? 0.7 : 1 }}
+            style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 16px", background: "var(--primary)", color: "var(--primary-foreground)", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", cursor: "pointer", opacity: saving ? 0.7 : 1 }}
           >
             <Save size={14} /> {saving ? "Saving..." : "Save All"}
           </button>
-          {saveMsg && <p style={{ color: saveMsg.startsWith("✓") ? "#4ade80" : "#f87171", fontSize: "0.75rem", fontWeight: 700, textAlign: "center" }}>{saveMsg}</p>}
+          {saveMsg && <p style={{ color: saveMsg.startsWith("✓") ? "var(--primary)" : "var(--destructive)", fontSize: "0.75rem", fontWeight: 700, textAlign: "center" }}>{saveMsg}</p>}
           <a
             href="/"
             target="_blank"
-            style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 16px", backgroundColor: "transparent", color: "#4a4870", borderRadius: "10px", border: "1px solid var(--accent-lime-glow)", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", textDecoration: "none" }}
+            style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 16px", backgroundColor: "transparent", color: "var(--muted-foreground)", borderRadius: "10px", border: "1px solid var(--border)", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", textDecoration: "none" }}
           >
             <Eye size={14} /> Preview Site
           </a>
           <button
             onClick={() => setAuthenticated(false)}
-            style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 16px", backgroundColor: "transparent", color: "#4a4870", borderRadius: "10px", border: "1px solid var(--accent-lime-glow)", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", cursor: "pointer" }}
+            style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 16px", backgroundColor: "transparent", color: "var(--muted-foreground)", borderRadius: "10px", border: "1px solid var(--border)", fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", cursor: "pointer" }}
           >
             <LogOut size={14} /> Logout
           </button>
@@ -166,14 +166,14 @@ export default function AdminPage() {
 // ─── Login Screen ─────────────────────────────────────────
 function LoginScreen({ password, setPassword, onLogin, error }: any) {
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#050510" }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--background)" }}>
       <div className="w-full max-w-[400px] p-4 sm:p-6">
-        <div className="p-6 sm:p-10" style={{ background: "rgba(13,13,43,0.8)", backdropFilter: "blur(16px)", border: "1px solid var(--border)", borderRadius: "20px" }}>
+        <div className="p-6 sm:p-10" style={{ background: "var(--card)", backdropFilter: "blur(16px)", border: "1px solid var(--border)", borderRadius: "20px" }}>
           <div style={{ textAlign: "center", marginBottom: "32px" }}>
-            <div style={{ background: "linear-gradient(135deg,var(--accent),var(--accent-lime))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontWeight: 900, fontSize: "1.5rem", letterSpacing: "0.1em", marginBottom: "8px" }}>
+            <div style={{ background: "var(--primary)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontWeight: 900, fontSize: "1.5rem", letterSpacing: "0.1em", marginBottom: "8px" }}>
               ADMIN PANEL
             </div>
-            <p style={{ color: "#4a4870", fontSize: "0.8rem", fontWeight: 600 }}>Enter password to continue</p>
+            <p style={{ color: "var(--muted-foreground)", fontSize: "0.8rem", fontWeight: 600 }}>Enter password to continue</p>
           </div>
           <form onSubmit={onLogin} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <input
@@ -181,10 +181,10 @@ function LoginScreen({ password, setPassword, onLogin, error }: any) {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{ padding: "12px 16px", borderRadius: "12px", backgroundColor: "rgba(5,5,16,0.8)", border: "1px solid var(--border)", color: "#f0eeff", fontSize: "0.9rem", outline: "none" }}
+              className="admin-input"
             />
-            {error && <p style={{ color: "#f87171", fontSize: "0.8rem", fontWeight: 600 }}>{error}</p>}
-            <button type="submit" style={{ padding: "12px", background: "linear-gradient(135deg,var(--accent),#9b8bff)", color: "white", borderRadius: "12px", border: "none", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer" }}>
+            {error && <p style={{ color: "var(--destructive)", fontSize: "0.8rem", fontWeight: 600 }}>{error}</p>}
+            <button type="submit" style={{ padding: "12px", background: "var(--primary)", color: "var(--primary-foreground)", borderRadius: "12px", border: "none", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer" }}>
               Login →
             </button>
           </form>
@@ -196,17 +196,16 @@ function LoginScreen({ password, setPassword, onLogin, error }: any) {
 
 function LoadingScreen() {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#050510", color: "var(--accent)", fontWeight: 700 }}>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--background)", color: "var(--primary)", fontWeight: 700 }}>
       Loading data...
     </div>
   );
 }
 
 // ─── Shared field styles ──────────────────────────────────
-const fieldStyle: React.CSSProperties = { width: "100%", padding: "10px 14px", borderRadius: "10px", backgroundColor: "rgba(5,5,16,0.6)", border: "1px solid var(--border)", color: "#f0eeff", fontSize: "0.875rem", outline: "none", boxSizing: "border-box" };
-const labelStyle: React.CSSProperties = { display: "block", color: "var(--muted)", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: "6px" };
-const sectionTitle: React.CSSProperties = { fontSize: "1.5rem", fontWeight: 900, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: "24px", background: "linear-gradient(135deg,var(--accent),var(--accent-lime))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" };
-const cardStyle: React.CSSProperties = { backgroundColor: "rgba(13,13,43,0.6)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", marginBottom: "16px" };
+const labelStyle: React.CSSProperties = { display: "block", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.1em", marginBottom: "6px" };
+const sectionTitle: React.CSSProperties = { fontSize: "1.5rem", fontWeight: 900, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: "24px", background: "var(--primary)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" };
+const cardStyle: React.CSSProperties = { backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", marginBottom: "16px" };
 
 // ─── Profile Tab ──────────────────────────────────────────
 function ProfileTab({ data, setData }: any) {
@@ -273,13 +272,13 @@ function ProfileTab({ data, setData }: any) {
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", background: "var(--accent-lime-glow)", color: "var(--accent)", border: "1px solid var(--accent-glow)", borderRadius: "8px", fontWeight: 700, fontSize: "0.75rem", cursor: "pointer", marginBottom: "8px", width: "100%" }}
+              style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", background: "var(--accent)", color: "var(--accent-foreground)", border: "1px solid var(--border)", borderRadius: "8px", fontWeight: 700, fontSize: "0.75rem", cursor: "pointer", marginBottom: "8px", width: "100%" }}
             >
               <Upload size={13} /> Upload Photo
             </button>
             <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: "none" }} />
             <p style={{ color: "#4a4870", fontSize: "0.7rem", marginBottom: "4px" }}>Or enter image URL:</p>
-            <input style={{ ...fieldStyle }} value={data.profile.photo || ""} onChange={(e) => update("photo", e.target.value)} placeholder="/uploads/profile.png" />
+            <input className="admin-input" value={data.profile.photo || ""} onChange={(e) => update("photo", e.target.value)} placeholder="/uploads/profile.png" />
           </div>
 
           {/* Fields */}
@@ -295,12 +294,12 @@ function ProfileTab({ data, setData }: any) {
             ].map(({ key, label, placeholder }) => (
               <div key={key} style={key === "bio" ? { gridColumn: "1 / -1" } : {}}>
                 <label style={labelStyle}>{label}</label>
-                <input style={fieldStyle} value={data.profile[key] || ""} onChange={(e) => update(key, e.target.value)} placeholder={placeholder} />
+                <input className="admin-input" value={data.profile[key] || ""} onChange={(e) => update(key, e.target.value)} placeholder={placeholder} />
               </div>
             ))}
             <div style={{ gridColumn: "1 / -1" }}>
               <label style={labelStyle}>Bio</label>
-              <textarea style={{ ...fieldStyle, resize: "vertical" } as any} rows={4} value={data.profile.bio || ""} onChange={(e) => update("bio", e.target.value)} placeholder="About yourself..." />
+              <textarea className="admin-input" rows={4} value={data.profile.bio || ""} onChange={(e) => update("bio", e.target.value)} placeholder="About yourself..." />
             </div>
           </div>
         </div>
@@ -313,7 +312,7 @@ function ProfileTab({ data, setData }: any) {
           {["whatsapp", "linkedin", "instagram", "github", "email"].map((s) => (
             <div key={s}>
               <label style={labelStyle}>{s}</label>
-              <input style={fieldStyle} value={data.socials?.[s] || ""} onChange={(e) => updateSocial(s, e.target.value)} placeholder={`https://...`} />
+              <input className="admin-input" value={data.socials?.[s] || ""} onChange={(e) => updateSocial(s, e.target.value)} placeholder={`https://...`} />
             </div>
           ))}
         </div>
@@ -364,7 +363,7 @@ function ProjectsTab({ data, setData }: any) {
       
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <h1 style={{ ...sectionTitle, marginBottom: 0 }}>Projects</h1>
-        <button onClick={addProject} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "linear-gradient(135deg,var(--accent),#9b8bff)", color: "white", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
+        <button onClick={addProject} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "var(--primary)", color: "var(--primary-foreground)", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
           <Plus size={14} /> Add Project
         </button>
       </div>
@@ -403,7 +402,7 @@ function ProjectsTab({ data, setData }: any) {
               </div>
               <button 
                 onClick={() => triggerUpload(project.id)}
-                style={{ width: "100%", padding: "8px", background: "var(--accent-lime-glow)", color: "var(--accent)", border: "1px solid var(--accent-glow)", borderRadius: "8px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
+                style={{ width: "100%", padding: "8px", background: "var(--accent)", color: "var(--accent-foreground)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
               >
                 <Upload size={12} /> Upload Image
               </button>
@@ -417,20 +416,20 @@ function ProjectsTab({ data, setData }: any) {
               ].map(({ key, label }) => (
                 <div key={key}>
                   <label style={labelStyle}>{label}</label>
-                  <input style={fieldStyle} value={project[key] || ""} onChange={(e) => updateProject(project.id, key, e.target.value)} />
+                  <input className="admin-input" value={project[key] || ""} onChange={(e) => updateProject(project.id, key, e.target.value)} />
                 </div>
               ))}
               <div style={{ gridColumn: "1 / -1" }}>
                 <label style={labelStyle}>Image URL (Manual)</label>
-                <input style={fieldStyle} value={project.image || ""} onChange={(e) => updateProject(project.id, "image", e.target.value)} placeholder="/projects/1.png" />
+                <input className="admin-input" value={project.image || ""} onChange={(e) => updateProject(project.id, "image", e.target.value)} placeholder="/projects/1.png" />
               </div>
               <div style={{ gridColumn: "1 / -1" }}>
                 <label style={labelStyle}>Description</label>
-                <textarea style={{ ...fieldStyle, resize: "vertical" } as any} rows={2} value={project.description || ""} onChange={(e) => updateProject(project.id, "description", e.target.value)} />
+                <textarea className="admin-input" rows={2} value={project.description || ""} onChange={(e) => updateProject(project.id, "description", e.target.value)} />
               </div>
               <div style={{ gridColumn: "1 / -1" }}>
                 <label style={labelStyle}>Tags (comma separated)</label>
-                <input style={fieldStyle} value={(project.tags || []).join(", ")} onChange={(e) => updateProject(project.id, "tags", e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean))} placeholder="React, Next.js, GSAP" />
+                <input className="admin-input" value={(project.tags || []).join(", ")} onChange={(e) => updateProject(project.id, "tags", e.target.value.split(",").map((t: string) => t.trim()).filter(Boolean))} placeholder="React, Next.js, GSAP" />
               </div>
             </div>
           </div>
@@ -480,7 +479,7 @@ function SkillsTab({ data, setData }: any) {
       
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <h1 style={{ ...sectionTitle, marginBottom: 0 }}>Skills / Tech Stack</h1>
-        <button onClick={addSkill} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "linear-gradient(135deg,var(--accent),#9b8bff)", color: "white", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
+        <button onClick={addSkill} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "var(--primary)", color: "var(--primary-foreground)", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
           <Plus size={14} /> Add Skill
         </button>
       </div>
@@ -518,15 +517,15 @@ function SkillsTab({ data, setData }: any) {
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <div>
                   <label style={labelStyle}>Skill Name</label>
-                  <input style={fieldStyle} value={skill.name} onChange={(e) => updateSkill(i, "name", e.target.value)} />
+                  <input className="admin-input" value={skill.name} onChange={(e) => updateSkill(i, "name", e.target.value)} />
                 </div>
                 <div>
                   <label style={labelStyle}>Icon (Slug or Emoji)</label>
-                  <input style={fieldStyle} value={skill.icon} onChange={(e) => updateSkill(i, "icon", e.target.value)} placeholder="react, nextdotjs, or 🚀" />
+                  <input className="admin-input" value={skill.icon} onChange={(e) => updateSkill(i, "icon", e.target.value)} placeholder="react, nextdotjs, or 🚀" />
                 </div>
                 <button 
                   onClick={() => triggerUpload(i)}
-                  style={{ width: "100%", padding: "8px", background: "var(--accent-lime-glow)", color: "var(--accent)", border: "1px solid var(--accent-glow)", borderRadius: "8px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer" }}
+                  style={{ width: "100%", padding: "8px", background: "var(--accent)", color: "var(--accent-foreground)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer" }}
                 >
                   Upload PNG Logo
                 </button>
@@ -553,15 +552,15 @@ function ServicesTab({ data, setData }: any) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label style={labelStyle}>Service Title</label>
-              <input style={fieldStyle} value={service.title} onChange={(e) => updateService(service.id, "title", e.target.value)} />
+              <input className="admin-input" value={service.title} onChange={(e) => updateService(service.id, "title", e.target.value)} />
             </div>
             <div>
               <label style={labelStyle}>Icon Name (lucide)</label>
-              <input style={fieldStyle} value={service.icon} onChange={(e) => updateService(service.id, "icon", e.target.value)} placeholder="Code2, Layout, PenTool..." />
+              <input className="admin-input" value={service.icon} onChange={(e) => updateService(service.id, "icon", e.target.value)} placeholder="Code2, Layout, PenTool..." />
             </div>
             <div style={{ gridColumn: "1 / -1" }}>
               <label style={labelStyle}>Description</label>
-              <textarea style={{ ...fieldStyle, resize: "vertical" } as any} rows={3} value={service.description} onChange={(e) => updateService(service.id, "description", e.target.value)} />
+              <textarea className="admin-input" rows={3} value={service.description} onChange={(e) => updateService(service.id, "description", e.target.value)} />
             </div>
           </div>
         </div>
@@ -585,7 +584,7 @@ function TestimonialsTab({ data, setData }: any) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <h1 style={{ ...sectionTitle, marginBottom: 0 }}>Testimonials</h1>
-        <button onClick={addTestimonial} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "linear-gradient(135deg,var(--accent),#9b8bff)", color: "white", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
+        <button onClick={addTestimonial} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "var(--primary)", color: "var(--primary-foreground)", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
           <Plus size={14} /> Add
         </button>
       </div>
@@ -600,19 +599,19 @@ function TestimonialsTab({ data, setData }: any) {
           <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_80px] gap-3">
             <div>
               <label style={labelStyle}>Author Name</label>
-              <input style={fieldStyle} value={t.author} onChange={(e) => updateTestimonial(t.id, "author", e.target.value)} />
+              <input className="admin-input" value={t.author} onChange={(e) => updateTestimonial(t.id, "author", e.target.value)} />
             </div>
             <div>
               <label style={labelStyle}>Role</label>
-              <input style={fieldStyle} value={t.role} onChange={(e) => updateTestimonial(t.id, "role", e.target.value)} />
+              <input className="admin-input" value={t.role} onChange={(e) => updateTestimonial(t.id, "role", e.target.value)} />
             </div>
             <div>
               <label style={labelStyle}>Initials</label>
-              <input style={{ ...fieldStyle, textAlign: "center" }} maxLength={2} value={t.initials} onChange={(e) => updateTestimonial(t.id, "initials", e.target.value)} />
+              <input className="admin-input text-center" maxLength={2} value={t.initials} onChange={(e) => updateTestimonial(t.id, "initials", e.target.value)} />
             </div>
             <div style={{ gridColumn: "1 / -1" }}>
               <label style={labelStyle}>Quote</label>
-              <textarea style={{ ...fieldStyle, resize: "vertical" } as any} rows={3} value={t.quote} onChange={(e) => updateTestimonial(t.id, "quote", e.target.value)} />
+              <textarea className="admin-input" rows={3} value={t.quote} onChange={(e) => updateTestimonial(t.id, "quote", e.target.value)} />
             </div>
           </div>
         </div>
@@ -638,7 +637,7 @@ function ExperienceTab({ data, setData }: any) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <h1 style={{ ...sectionTitle, marginBottom: 0 }}>Work Experience</h1>
-        <button onClick={addExp} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "linear-gradient(135deg,var(--accent),var(--accent-lime))", color: "black", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
+        <button onClick={addExp} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "var(--primary)", color: "var(--primary-foreground)", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
           <Plus size={14} /> Add Experience
         </button>
       </div>
@@ -662,13 +661,13 @@ function ExperienceTab({ data, setData }: any) {
                 ].map(({ key, label }) => (
                   <div key={key}>
                     <label style={labelStyle}>{label}</label>
-                    <input style={fieldStyle} value={exp[key] || ""} onChange={(e) => updateExp(exp.id, key, e.target.value)} />
+                    <input className="admin-input" value={exp[key] || ""} onChange={(e) => updateExp(exp.id, key, e.target.value)} />
                   </div>
                 ))}
                 <div style={{ gridColumn: "1 / -1" }}>
                   <label style={labelStyle}>Achievements (one per line)</label>
                   <textarea 
-                    style={{ ...fieldStyle, resize: "vertical" } as any} 
+                    className="admin-input" 
                     rows={4} 
                     value={(exp.description || []).join("\n")} 
                     onChange={(e) => updateExp(exp.id, "description", e.target.value.split("\n"))} 
@@ -725,7 +724,7 @@ function CreativeWorksTab({ data, setData }: any) {
       
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <h1 style={{ ...sectionTitle, marginBottom: 0 }}>Creative Works</h1>
-        <button onClick={addWork} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "linear-gradient(135deg,var(--accent),#9b8bff)", color: "white", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
+        <button onClick={addWork} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "var(--primary)", color: "var(--primary-foreground)", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
           <Plus size={14} /> Add Work
         </button>
       </div>
@@ -765,7 +764,7 @@ function CreativeWorksTab({ data, setData }: any) {
               </div>
               <button 
                 onClick={() => triggerUpload(work.id)}
-                style={{ width: "100%", padding: "8px", background: "var(--accent-lime-glow)", color: "var(--accent)", border: "1px solid var(--accent-glow)", borderRadius: "8px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
+                style={{ width: "100%", padding: "8px", background: "var(--accent)", color: "var(--accent-foreground)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
               >
                 <Upload size={12} /> Upload Image
               </button>
@@ -781,12 +780,12 @@ function CreativeWorksTab({ data, setData }: any) {
               ].map(({ key, label }) => (
                 <div key={key}>
                   <label style={labelStyle}>{label}</label>
-                  <input style={fieldStyle} value={work[key] || ""} onChange={(e) => updateWork(work.id, key, e.target.value)} />
+                  <input className="admin-input" value={work[key] || ""} onChange={(e) => updateWork(work.id, key, e.target.value)} />
                 </div>
               ))}
               <div style={{ gridColumn: "1 / -1" }}>
                 <label style={labelStyle}>Description (Shown when expanded)</label>
-                <textarea style={{ ...fieldStyle, resize: "vertical" } as any} rows={2} value={work.description || ""} onChange={(e) => updateWork(work.id, "description", e.target.value)} />
+                <textarea className="admin-input" rows={2} value={work.description || ""} onChange={(e) => updateWork(work.id, "description", e.target.value)} />
               </div>
             </div>
           </div>
