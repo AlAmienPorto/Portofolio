@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Menu, Sun, Moon, Home, User, Layers, Briefcase, Mail } from "lucide-react";
+import { X, Menu, Home, User, Layers, Briefcase, Mail } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/lib/theme";
 import { usePortfolioData } from "@/lib/portfolio-context";
@@ -16,6 +16,7 @@ const navLinks = [
 ];
 
 import ShineLabel from "@/components/ShineLabel";
+import AnimatedThemeToggler from "@/components/AnimatedThemeToggler";
 
 export default function Navbar() {
   const { profile } = usePortfolioData();
@@ -123,13 +124,7 @@ export default function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-3">
             {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="hover-target theme-toggle"
-              title={theme === "dark" ? "Light Mode" : "Dark Mode"}
-            >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
+            <AnimatedThemeToggler />
 
             {/* CTA — desktop */}
             <a
