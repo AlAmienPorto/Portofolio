@@ -4,6 +4,7 @@ import SmoothScroller from "@/components/SmoothScroller";
 import { PortfolioProvider } from "@/lib/portfolio-context";
 
 import Hero from "@/components/sections/SequenceScroll";
+import VelocityScrollSection from "@/components/sections/VelocityScrollSection";
 import About from "@/components/sections/About";
 import Services from "@/components/sections/Services";
 import Projects from "@/components/sections/Projects";
@@ -26,6 +27,7 @@ export default function Home() {
 
         <main className="w-full relative" style={{ backgroundColor: "var(--bg)" }}>
           <Hero />
+          <VelocityScrollSection />
           <About />
           <Services />
           <Projects />
