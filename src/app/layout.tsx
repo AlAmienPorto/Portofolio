@@ -23,9 +23,10 @@ const bebasNeue = Bebas_Neue({
 });
 
 const spaceGrotesk = Space_Grotesk({
+  // Variable font: one file per subset instead of one per weight (400–700 all included).
   variable: "--font-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
