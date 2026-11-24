@@ -88,6 +88,19 @@ export interface MusicTrack {
   cover?: string;
 }
 
+export interface Certificate {
+  id: number;
+  title: string;
+  issuer: string;
+  /** free text, e.g. "Mar 2025" or "2024" */
+  date: string;
+  /** image (jpg/png/webp) or PDF of the certificate */
+  file: string;
+  credentialId?: string;
+  /** verification link on the issuer's site */
+  url?: string;
+}
+
 export interface PortfolioData {
   profile: PortfolioProfile;
   socials: PortfolioSocials;
@@ -99,6 +112,8 @@ export interface PortfolioData {
   creativeWorks: CreativeWork[];
   /** background music playlist for the vinyl player */
   music?: MusicTrack[];
+  /** e-certificates shown under Professional Experience */
+  certificates?: Certificate[];
 }
 
 // ─── Default fallback data ────────────────────────────────

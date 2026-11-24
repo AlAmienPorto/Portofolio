@@ -7,10 +7,11 @@ import { Download, MapPin, ArrowUpRight } from "lucide-react";
 import type { Experience } from "@/lib/portfolio-context";
 
 import HolographicCard from "@/components/HolographicCard";
+import Certificates from "@/components/sections/Certificates";
 
 
 export default function About() {
-  const { profile, experience } = usePortfolioData();
+  const { profile, experience, certificates } = usePortfolioData();
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -99,6 +100,9 @@ export default function About() {
 
         {/* ── Professional Experience ── */}
         <ExperienceList experience={experience || []} />
+
+        {/* ── E-Certificates ── */}
+        <Certificates certificates={certificates || []} />
       </div>
     </section>
   );

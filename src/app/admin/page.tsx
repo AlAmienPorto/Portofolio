@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { User, Briefcase, Code2, MessageSquare, Settings, LogOut, Plus, Trash2, Save, Eye, Upload, X, GripVertical, Menu, Palette, Link2, Images, Loader2, Music } from "lucide-react";
+import { motion, AnimatePresence, Reorder, useDragControls } from "framer-motion";
+import { User, Briefcase, Code2, MessageSquare, Settings, LogOut, Plus, Trash2, Save, Eye, Upload, X, GripVertical, Menu, Palette, Link2, Images, Loader2, Music, Award, FileText } from "lucide-react";
 import { parseVideo, PLATFORM_LABEL } from "@/lib/media";
 import { upload as blobUpload } from "@vercel/blob/client";
 
 
 // ─── Types ───────────────────────────────────────────────
-type Tab = "profile" | "experience" | "projects" | "creative" | "music" | "skills" | "services" | "testimonials";
+type Tab = "profile" | "experience" | "certificates" | "projects" | "creative" | "music" | "skills" | "services" | "testimonials";
 
 // ─── Main Admin Page ─────────────────────────────────────
 export default function AdminPage() {
@@ -102,6 +102,7 @@ export default function AdminPage() {
   const tabs = [
     { id: "profile" as Tab, label: "Profile", icon: User },
     { id: "experience" as Tab, label: "Experience", icon: Briefcase },
+    { id: "certificates" as Tab, label: "Certificates", icon: Award },
     { id: "projects" as Tab, label: "Projects", icon: Code2 },
     { id: "creative" as Tab, label: "Creative", icon: Palette },
     { id: "music" as Tab, label: "Music", icon: Music },
@@ -206,6 +207,7 @@ export default function AdminPage() {
             {activeTab === "services" && <ServicesTab data={data} setData={setData} />}
             {activeTab === "testimonials" && <TestimonialsTab data={data} setData={setData} />}
             {activeTab === "music" && <MusicTab data={data} setData={setData} />}
+            {activeTab === "certificates" && <CertificatesTab data={data} setData={setData} />}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -763,6 +765,25 @@ function ExperienceTab({ data, setData }: any) {
     </div>
   );
 }
+
+/** Reorder item that only drags from its handle, so inputs inside stay usable. */
+function HandleReorderItem({
+  value,
+  renderHandle,
+  children,
+}: {
+  value: any;
+  renderHandle: (start: (e: React.PointerEvent) => void) => React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const controls = useDragControls();
+  return (
+    <Reorder.Item value={value} dragListener={false} dragControls={controls} className="admin-card" style={{ listStyle: "none" }}>
+      {renderHandle((e) => controls.start(e))}
+      {children}
+    </Reorder.Item>
+  );
+}
 // ─── Creative Works Tab ───────────────────────────────────────
 function CreativeWorksTab({ data, setData }: any) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -1169,6 +1190,127 @@ function MusicTab({ data, setData }: any) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ─── Certificates Tab (e-certificates under Experience) ───
+function CertificatesTab({ data, setData }: any) {
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [targetId, setTargetId] = useState<number | null>(null);
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const [err, setErr] = useState<{ id: number; msg: string } | null>(null);
+  const certs: any[] = data.certificates || [];
+
+  const update = (id: number, key: string, val: string) =>
+    setData((d: any) => ({ ...d, certificates: (d.certificates || []).map((c: any) => (c.id === id ? { ...c, [key]: val } : c)) }));
+  const add = () =>
+    setData((d: any) => ({
+      ...d,
+      certificates: [{ id: Date.now(), title: "Certificate title", issuer: "", date: String(new Date().getFullYear()), file: "", credentialId: "", url: "" }, ...(d.certificates || [])],
+    }));
+  const remove = (id: number) => setData((d: any) => ({ ...d, certificates: (d.certificates || []).filter((c: any) => c.id !== id) }));
+
+  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const id = targetId;
+    e.target.value = "";
+    if (!file || id === null) return;
+    setErr(null);
+    if (file.size > 4 * 1024 * 1024) {
+      setErr({ id, msg: "File is larger than 4 MB — please compress it (Vercel limits uploads through the server)." });
+      return;
+    }
+    setBusyId(id);
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: form });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok && json.url) update(id, "file", json.url);
+    else setErr({ id, msg: json.error || "Upload failed" });
+    setBusyId(null);
+  };
+
+  const isPdf = (f: string) => /\.pdf($|\?)/i.test(f || "");
+
+  return (
+    <div>
+      <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={onFile} style={{ display: "none" }} />
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+        <h1 style={{ ...sectionTitle, marginBottom: 0 }}>E-Certificates</h1>
+        <button onClick={add} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "var(--primary)", color: "var(--primary-foreground)", borderRadius: "10px", border: "none", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer" }}>
+          <Plus size={14} /> Add Certificate
+        </button>
+      </div>
+      <p style={{ fontSize: "0.8rem", color: "#a3a3a3", marginBottom: "24px" }}>
+        Shown under Professional Experience. Upload the certificate as an image (JPG/PNG/WebP) or PDF, max 4 MB. Drag cards to reorder.
+      </p>
+
+      {certs.length === 0 && (
+        <div className="admin-card" style={{ textAlign: "center", color: "#737373", fontSize: "0.85rem" }}>
+          No certificates yet — the section stays hidden until you add one.
+        </div>
+      )}
+
+      <Reorder.Group axis="y" values={certs} onReorder={(list) => setData((d: any) => ({ ...d, certificates: list }))} className="flex flex-col gap-4">
+        {certs.map((c: any, i: number) => (
+          <HandleReorderItem key={c.id} value={c} renderHandle={(start) => (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div className="flex items-center gap-3">
+                <span onPointerDown={start} aria-label="Drag to reorder" style={{ cursor: "grab", touchAction: "none", display: "flex" }}>
+                  <GripVertical size={16} style={{ color: "#737373" }} />
+                </span>
+                <div style={{ background: "rgba(245,158,11,0.1)", color: "var(--primary)", width: "24px", height: "24px", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", fontWeight: 800 }}>
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <span style={{ fontWeight: 800, fontSize: "1rem", color: "#f0eeff" }}>{c.title || "Untitled"}</span>
+              </div>
+              <button onClick={() => remove(c.id)} style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", color: "#f87171", borderRadius: "8px", padding: "4px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontSize: "0.75rem", fontWeight: 700 }}>
+                <Trash2 size={12} /> Delete
+              </button>
+            </div>
+          )}>
+
+            <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-start">
+              <div>
+                <label style={labelStyle}>Certificate file</label>
+                <div style={{ width: "100%", aspectRatio: "1.414", borderRadius: "10px", overflow: "hidden", border: "1px solid #333", background: "#171717", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "8px" }}>
+                  {c.file && !isPdf(c.file) ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={c.file} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                  ) : c.file ? (
+                    <a href={c.file} target="_blank" rel="noreferrer" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, color: "#a3e635", fontSize: "0.7rem", fontWeight: 700 }}>
+                      <FileText size={26} /> PDF — open
+                    </a>
+                  ) : (
+                    <Award size={26} style={{ color: "#525252" }} />
+                  )}
+                </div>
+                <button
+                  onClick={() => { setTargetId(c.id); fileInput.current?.click(); }}
+                  disabled={busyId !== null}
+                  style={{ ...smallBtn, width: "100%", justifyContent: "center", opacity: busyId !== null ? 0.6 : 1 }}
+                >
+                  {busyId === c.id ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                  {busyId === c.id ? "Uploading…" : c.file ? "Replace file" : "Upload image / PDF"}
+                </button>
+                {err?.id === c.id && <p style={{ fontSize: "0.72rem", color: "#f87171", marginTop: 6 }}>{err?.msg}</p>}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <InputField label="Certificate title" value={c.title} onChange={(e: any) => update(c.id, "title", e.target.value)} />
+                </div>
+                <InputField label="Issuer (e.g. Google, Dicoding)" value={c.issuer} onChange={(e: any) => update(c.id, "issuer", e.target.value)} />
+                <InputField label="Issued (e.g. Mar 2025)" value={c.date} onChange={(e: any) => update(c.id, "date", e.target.value)} />
+                <InputField label="Credential ID (optional)" value={c.credentialId} onChange={(e: any) => update(c.id, "credentialId", e.target.value)} />
+                <InputField label="Verify URL (optional)" value={c.url} onChange={(e: any) => update(c.id, "url", e.target.value)} />
+              </div>
+            </div>
+          </HandleReorderItem>
+        ))}
+      </Reorder.Group>
     </div>
   );
 }
