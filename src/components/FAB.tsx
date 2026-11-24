@@ -30,8 +30,8 @@ export default function FAB() {
               rel="noreferrer"
               className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
               style={{ 
-                backgroundColor: "var(--accent-lime)", 
-                color: "#000",
+                backgroundColor: "var(--accent)",
+                color: "var(--on-accent)",
                 boxShadow: "0 0 20px var(--shadow-lime)" 
               }}
             >
@@ -48,8 +48,8 @@ export default function FAB() {
         whileTap={{ scale: 0.9 }}
         className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl relative group"
         style={{ 
-          backgroundColor: isOpen ? "var(--surface)" : "var(--accent-lime)",
-          color: isOpen ? "var(--fg)" : "#000",
+          backgroundColor: isOpen ? "var(--surface)" : "var(--accent)",
+          color: isOpen ? "var(--fg)" : "var(--on-accent)",
           border: isOpen ? "1px solid var(--border)" : "none",
           boxShadow: isOpen ? "none" : "0 0 30px var(--shadow-lime)"
         }}
@@ -57,7 +57,7 @@ export default function FAB() {
         {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
         
         {!isOpen && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[#050510] animate-pulse" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[var(--bg)] animate-pulse" />
         )}
       </motion.button>
     </div>

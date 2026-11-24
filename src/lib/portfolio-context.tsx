@@ -72,6 +72,20 @@ export interface CreativeWork {
   description: string;
   image: string;
   year: string;
+  /** extra images shown in the carousel */
+  gallery?: string[];
+  /** YouTube / TikTok / Instagram / direct video links */
+  videos?: string[];
+}
+
+export interface MusicTrack {
+  id: number;
+  title: string;
+  artist: string;
+  /** audio file URL (mp3 / m4a / ogg / wav) */
+  src: string;
+  /** optional cover art shown on the vinyl label */
+  cover?: string;
 }
 
 export interface PortfolioData {
@@ -83,6 +97,8 @@ export interface PortfolioData {
   testimonials: Testimonial[];
   experience: Experience[];
   creativeWorks: CreativeWork[];
+  /** background music playlist for the vinyl player */
+  music?: MusicTrack[];
 }
 
 // ─── Default fallback data ────────────────────────────────

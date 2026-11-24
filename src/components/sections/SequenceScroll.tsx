@@ -1,192 +1,157 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { usePortfolioData } from "@/lib/portfolio-context";
-import { useTheme } from "@/lib/theme";
 import ScrambleText from "@/components/ScrambleText";
 import { InfiniteGrid } from "@/components/ui/the-infinite-grid";
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+function useJakartaTime() {
+  const [time, setTime] = useState<string>("");
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Jakarta",
+    });
+    const tick = () => setTime(fmt.format(new Date()));
+    tick();
+    const id = setInterval(tick, 15_000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
 export default function Hero() {
-  const { profile } = usePortfolioData();
-  const { theme } = useTheme();
+  const { profile, projects, creativeWorks } = usePortfolioData();
   const containerRef = useRef<HTMLDivElement>(null);
+  const time = useJakartaTime();
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
   });
+  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.6], [0, -80]);
 
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale   = useTransform(scrollYProgress, [0, 0.5], [1, 0.96]);
-  const y       = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
+  const workCount = (projects?.length || 0) + (creativeWorks?.length || 0);
+
+  const stats = [
+    { num: profile.experience?.replace(/\s*years?/i, "") || "5+", label: "Years of practice" },
+    { num: workCount ? String(workCount).padStart(2, "0") : "40+", label: "Selected works" },
+    { num: "20+", label: "Happy clients" },
+  ];
 
   return (
-    <section
-      ref={containerRef}
-      id="home"
-      className="relative w-full h-screen overflow-hidden"
-    >
-      <InfiniteGrid className="w-full h-full">
+    <section ref={containerRef} id="home" className="relative w-full min-h-[100svh] overflow-hidden">
+      <InfiniteGrid className="w-full min-h-[100svh] h-auto">
         <motion.div
-          style={{ opacity, scale, y }}
-          className="relative z-10 w-full max-w-[1200px] mx-auto px-6 md:px-16 flex flex-col"
+          style={{ opacity, y }}
+          className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-28 md:pt-32 pb-10 min-h-[100svh] flex flex-col"
         >
-          {/* Label */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="section-label mb-6"
-          >
-            Hello, World ✦ Based in Indonesia
-          </motion.div>
-
-          {/* HERO TITLE — Bebas Neue */}
-          <div className="overflow-hidden">
-            <motion.h1
-              initial={{ y: 110, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.55, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              style={{
-                fontFamily: "var(--font-bebas, var(--font-syne))",
-                fontSize: "clamp(3.2rem, 15vw, 13rem)",
-                lineHeight: 0.92,
-                letterSpacing: "0.02em",
-                color: "var(--fg)",
-              }}
-            >
-              <ScrambleText text="JAWAD" delay={600} speed={50} />
-            </motion.h1>
-          </div>
-
-          <div className="overflow-hidden flex items-end gap-4 flex-wrap">
-            <motion.h1
-              initial={{ y: 110, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.68, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              style={{
-                fontFamily: "var(--font-bebas, var(--font-syne))",
-                fontSize: "clamp(3.2rem, 15vw, 13rem)",
-                lineHeight: 0.92,
-                letterSpacing: "0.02em",
-              }}
-            >
-              <ScrambleText
-                text="AL AMIEN"
-                delay={900}
-                speed={50}
-                style={{
-                  background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              />
-            </motion.h1>
-
-            {/* Availability pill — floats next to title */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.0, duration: 0.5 }}
-              className="glass-card flex items-center gap-2 px-4 py-2 rounded-full mb-4 flex-shrink-0"
-            >
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-xs font-bold uppercase tracking-wider text-green-400">
-                Available
-              </span>
-            </motion.div>
-          </div>
-
-          {/* Tagline row */}
-          <div className="mt-8 flex flex-col sm:flex-row sm:items-start gap-6 sm:gap-12">
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.7 }}
-              className="text-lg md:text-xl leading-relaxed max-w-md"
-              style={{ color: "var(--muted)", fontFamily: "var(--font-manrope)" }}
-            >
-              Creative Developer & UI/UX Designer — crafting immersive digital experiences that push the boundaries of the modern web.
-            </motion.p>
-
-            {/* CTA buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.05, duration: 0.6 }}
-              className="flex flex-wrap gap-3 sm:mt-1"
-            >
-              <a 
-                href="#works" 
-                className="btn-primary hover-target py-3 px-6 md:py-4 md:px-8 text-sm md:text-base"
-                style={{ color: theme === "dark" ? "#000" : "#fff" }}
-              >
-                View Work
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </a>
-              <a href="#contact" className="btn-outline hover-target">
-                Let's Connect
-              </a>
-            </motion.div>
-          </div>
-
-          {/* Scroll indicator */}
+          {/* Meta rail */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.6 }}
-            className="absolute bottom-12 right-8 md:right-16 hidden md:flex flex-col items-center gap-3"
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-y-3 pb-4 border-b hairline"
           >
-            <span
-              className="text-xs font-bold uppercase tracking-widest"
-              style={{ color: "var(--muted)", writingMode: "vertical-rl" }}
-            >
-              Scroll Down
+            <span className="meta-label">
+              <span style={{ color: "var(--accent)" }}>(00)</span> Portfolio ©{new Date().getFullYear()}
             </span>
-            <div
-              className="w-px h-16"
-              style={{ background: "linear-gradient(to bottom, var(--accent), transparent)" }}
-            />
+            <span className="meta-label text-right md:text-left">{profile.location || "Indonesia"}</span>
+            <span className="meta-label tabular-nums" suppressHydrationWarning>
+              Local time {time || "--:--"} WIB
+            </span>
+            <span className="meta-label flex items-center gap-2 justify-end">
+              <span className="relative flex w-2 h-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60 animate-ping" />
+                <span className="relative inline-flex w-2 h-2 rounded-full bg-green-500" />
+              </span>
+              {profile.availability || "Available"}
+            </span>
           </motion.div>
-        </motion.div>
 
-        {/* Stats bar — bottom */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.15, duration: 0.7 }}
-          className="absolute bottom-0 left-0 right-0 z-10 px-6 md:px-16 py-6"
-          style={{ borderTop: "1px solid var(--border)" }}
-        >
-          <div className="max-w-[1200px] mx-auto flex flex-wrap gap-8 md:gap-16">
-            {[
-              { num: "5+", label: "Years Experience" },
-              { num: "40+", label: "Projects Done" },
-              { num: "20+", label: "Happy Clients" },
-            ].map((stat) => (
-              <div key={stat.label} className="flex flex-col">
-                <span
-                  style={{
-                    fontFamily: "var(--font-bebas, var(--font-syne))",
-                    fontSize: "2.4rem",
-                    lineHeight: 1,
-                    background: "linear-gradient(135deg, var(--accent), var(--accent-2))",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
-                  {stat.num}
-                </span>
-                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--muted)" }}>
-                  {stat.label}
-                </span>
-              </div>
-            ))}
+          {/* Name */}
+          <div className="flex-1 flex flex-col justify-center py-10 md:py-6">
+            <div className="overflow-hidden">
+              <motion.h1
+                initial={{ y: "105%" }}
+                animate={{ y: 0 }}
+                transition={{ delay: 0.5, duration: 1.1, ease: EASE }}
+                className="font-display uppercase"
+                style={{ fontSize: "clamp(4.5rem, 23vw, 17rem)", lineHeight: 0.82, color: "var(--fg)" }}
+              >
+                <ScrambleText text="JAWAD" delay={600} speed={50} />
+              </motion.h1>
+            </div>
+            <div className="overflow-hidden flex items-end justify-between gap-6">
+              <motion.h1
+                initial={{ y: "105%" }}
+                animate={{ y: 0 }}
+                transition={{ delay: 0.62, duration: 1.1, ease: EASE }}
+                className="font-display uppercase md:pl-[12vw]"
+                style={{ fontSize: "clamp(4.5rem, 23vw, 17rem)", lineHeight: 0.82, color: "var(--accent)" }}
+              >
+                <ScrambleText text="AL AMIEN" delay={900} speed={50} />
+              </motion.h1>
+              <motion.a
+                href="#works"
+                initial={{ opacity: 0, scale: 0.6, rotate: -45 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ delay: 1.2, duration: 0.6, ease: EASE }}
+                aria-label="Scroll to selected works"
+                className="hidden md:flex shrink-0 mb-[2vw] w-[8.5rem] h-[8.5rem] rounded-full items-center justify-center group"
+                style={{ border: "1px solid var(--line-strong)" }}
+              >
+                <ArrowDownRight
+                  size={44}
+                  strokeWidth={1.25}
+                  className="transition-transform duration-500 group-hover:rotate-[-45deg]"
+                  style={{ color: "var(--fg)" }}
+                />
+              </motion.a>
+            </div>
           </div>
+
+          {/* Bottom info grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.8, ease: EASE }}
+            className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-6 border-t hairline"
+          >
+            <div className="md:col-span-5 flex flex-col gap-6">
+              <p className="text-lg md:text-xl leading-relaxed max-w-md" style={{ color: "var(--fg)" }}>
+                {profile.tagline?.replace(/Designers\b/, "Designer") || "Creative Developer & UI/UX Designer"}
+                <span style={{ color: "var(--muted)" }}>
+                  {" "}— crafting interfaces, motion and visuals that make products feel considered.
+                </span>
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a href="#works" className="btn-primary">
+                  View work <ArrowUpRight size={16} />
+                </a>
+                <a href="#contact" className="btn-outline">
+                  Let&apos;s connect
+                </a>
+              </div>
+            </div>
+
+            <div className="md:col-span-7 grid grid-cols-3 md:border-l hairline">
+              {stats.map((s, i) => (
+                <div key={s.label} className={`md:pl-8 ${i > 0 ? "border-l hairline pl-4" : ""}`}>
+                  <p className="font-display" style={{ fontSize: "clamp(2.75rem, 5vw, 4.5rem)", color: "var(--fg)" }}>
+                    {s.num}
+                  </p>
+                  <p className="meta-label mt-1">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
       </InfiniteGrid>
     </section>

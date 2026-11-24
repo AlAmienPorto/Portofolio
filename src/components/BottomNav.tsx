@@ -57,7 +57,7 @@ export default function BottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="active-dot"
-                  className="w-1 h-1 rounded-full bg-lime-400"
+                  className="w-1 h-1 rounded-full bg-[var(--accent)]"
                   style={{ backgroundColor: "var(--accent-lime)" }}
                   transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.5 }}
                 />

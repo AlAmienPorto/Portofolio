@@ -13,6 +13,7 @@ import SkillMarquee from "@/components/sections/Marquee";
 import Contact from "@/components/sections/Contact";
 import FAB from "@/components/FAB";
 import BottomNav from "@/components/BottomNav";
+import VinylPlayer from "@/components/VinylPlayer";
 
 export default function Home() {
   return (
@@ -23,7 +24,6 @@ export default function Home() {
 
         {/* Mesh gradient background (fixed, behind everything) */}
         <div className="mesh-gradient" />
-        <div className="noise-overlay" />
 
         <main className="w-full relative" style={{ backgroundColor: "var(--bg)" }}>
           <Hero />
@@ -35,6 +35,7 @@ export default function Home() {
           <SkillMarquee />
           <Contact />
         </main>
+        <VinylPlayer />
         <FAB />
         <BottomNav />
       </SmoothScroller>

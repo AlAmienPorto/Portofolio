@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Syne, Manrope, Bebas_Neue } from "next/font/google";
+import { Syne, Manrope, Bebas_Neue, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/theme";
 import { Analytics } from "@vercel/analytics/next";
@@ -20,6 +20,12 @@ const bebasNeue = Bebas_Neue({
   variable: "--font-bebas",
   subsets: ["latin"],
   weight: "400",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-grotesk",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -63,7 +69,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark">
-      <body className={`${syne.variable} ${manrope.variable} ${bebasNeue.variable} antialiased`}>
+      <body className={`${syne.variable} ${manrope.variable} ${bebasNeue.variable} ${spaceGrotesk.variable} antialiased`}>
         <ThemeProvider>
           {children}
         </ThemeProvider>

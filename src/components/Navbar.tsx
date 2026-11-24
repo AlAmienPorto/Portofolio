@@ -26,9 +26,11 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    const onScroll = () => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
       setScrolled(window.scrollY > 40);
-      const ids = ["home", "about", "services", "works", "testimonials", "contact"];
+      const ids = ["home", "about", "services", "works", "testimonials", "stack", "contact"];
       for (const id of ids) {
         const el = document.getElementById(id);
         if (el) {
@@ -37,14 +39,21 @@ export default function Navbar() {
         }
       }
     };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   const navBg = scrolled
     ? theme === "dark"
-      ? "rgba(5,5,16,0.60)"
-      : "rgba(244,243,255,0.60)"
+      ? "rgba(10,10,11,0.72)"
+      : "rgba(245,244,239,0.78)"
     : "transparent";
 
   return (
@@ -82,11 +91,10 @@ export default function Navbar() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`hover-target relative px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-full transition-all duration-300 flex items-center gap-2 ${
-                      isActive
+                    className={`hover-target relative px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-full transition-all duration-300 flex items-center gap-2 ${isActive
                         ? "text-[var(--accent)] bg-[var(--accent-glow)]"
                         : "text-[var(--muted)] hover:text-[var(--accent-lime)] hover:bg-[var(--accent-lime-glow)]"
-                    }`}
+                      }`}
                   >
                     {/* Render icon if active */}
                     <AnimatePresence>
@@ -130,7 +138,7 @@ export default function Navbar() {
             <a
               href="#contact"
               className="inline-flex hover-target btn-primary py-1 px-2.5 md:py-2 md:px-5 text-[9px] md:text-xs whitespace-nowrap"
-              style={{ color: theme === "dark" ? "#000" : "#fff" }}
+              style={{ color: "var(--on-accent)" }}
             >
               Let's Talk
             </a>

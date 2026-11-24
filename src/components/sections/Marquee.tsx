@@ -1,156 +1,147 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { usePortfolioData } from "@/lib/portfolio-context";
-import { 
-  SiNextdotjs, 
-  SiReact, 
-  SiTypescript, 
-  SiFramer, 
-  SiGreensock, 
-  SiThreedotjs, 
-  SiWebgl, 
-  SiTailwindcss, 
-  SiNodedotjs, 
-  SiFigma, 
-  SiBlender 
+import type { IconType } from "react-icons";
+import {
+  SiNextdotjs, SiReact, SiTypescript, SiJavascript, SiFramer, SiGreensock, SiThreedotjs, SiWebgl,
+  SiTailwindcss, SiNodedotjs, SiFigma, SiBlender, SiFlutter, SiDart, SiLaravel, SiHtml5, SiCss,
+  SiGithub, SiGit, SiVercel, SiCanva, SiDavinciresolve,
 } from "react-icons/si";
+import {
+  TbBrandAdobePhotoshop, TbBrandAdobeIllustrator, TbBrandAdobeAfterEffect, TbBrandAdobePremier,
+  TbBrandAdobeXd, TbBrandAdobeIndesign, TbBrandAdobe,
+} from "react-icons/tb";
+import { Wrench } from "lucide-react";
+import { usePortfolioData } from "@/lib/portfolio-context";
 
-const IconMap: Record<string, any> = {
-  nextdotjs: SiNextdotjs,
-  react: SiReact,
-  typescript: SiTypescript,
-  framer: SiFramer,
-  greensock: SiGreensock,
-  threedotjs: SiThreedotjs,
-  webgl: SiWebgl,
-  tailwindcss: SiTailwindcss,
-  nodedotjs: SiNodedotjs,
-  figma: SiFigma,
-  blender: SiBlender,
+type Group = "Development" | "Motion & 3D" | "Design" | "Tools";
+
+const ICONS: Record<string, { icon: IconType; group: Group }> = {
+  nextdotjs: { icon: SiNextdotjs, group: "Development" },
+  react: { icon: SiReact, group: "Development" },
+  typescript: { icon: SiTypescript, group: "Development" },
+  javascript: { icon: SiJavascript, group: "Development" },
+  tailwindcss: { icon: SiTailwindcss, group: "Development" },
+  nodedotjs: { icon: SiNodedotjs, group: "Development" },
+  flutter: { icon: SiFlutter, group: "Development" },
+  dart: { icon: SiDart, group: "Development" },
+  laravel: { icon: SiLaravel, group: "Development" },
+  html5: { icon: SiHtml5, group: "Development" },
+  css: { icon: SiCss, group: "Development" },
+  framer: { icon: SiFramer, group: "Motion & 3D" },
+  greensock: { icon: SiGreensock, group: "Motion & 3D" },
+  threedotjs: { icon: SiThreedotjs, group: "Motion & 3D" },
+  webgl: { icon: SiWebgl, group: "Motion & 3D" },
+  blender: { icon: SiBlender, group: "Motion & 3D" },
+  adobeaftereffects: { icon: TbBrandAdobeAfterEffect, group: "Motion & 3D" },
+  aftereffects: { icon: TbBrandAdobeAfterEffect, group: "Motion & 3D" },
+  adobepremierepro: { icon: TbBrandAdobePremier, group: "Motion & 3D" },
+  premiere: { icon: TbBrandAdobePremier, group: "Motion & 3D" },
+  davinciresolve: { icon: SiDavinciresolve, group: "Motion & 3D" },
+  figma: { icon: SiFigma, group: "Design" },
+  photoshop: { icon: TbBrandAdobePhotoshop, group: "Design" },
+  adobephotoshop: { icon: TbBrandAdobePhotoshop, group: "Design" },
+  illustrator: { icon: TbBrandAdobeIllustrator, group: "Design" },
+  adobeillustrator: { icon: TbBrandAdobeIllustrator, group: "Design" },
+  adobexd: { icon: TbBrandAdobeXd, group: "Design" },
+  indesign: { icon: TbBrandAdobeIndesign, group: "Design" },
+  canva: { icon: SiCanva, group: "Design" },
+  adobe: { icon: TbBrandAdobe, group: "Design" },
+  github: { icon: SiGithub, group: "Tools" },
+  git: { icon: SiGit, group: "Tools" },
+  vercel: { icon: SiVercel, group: "Tools" },
 };
 
-function SkillBadge({ name, icon }: { name: string; icon: string }) {
-  const IconComponent = IconMap[icon];
-  const isUrl = icon.startsWith("http") || icon.startsWith("/");
+const GROUP_ORDER: Group[] = ["Development", "Motion & 3D", "Design", "Tools"];
 
+function resolve(icon: string, name: string) {
+  const key = (icon || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const byName = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return ICONS[key] || ICONS[byName];
+}
+
+type Resolved = { name: string; icon: string; Icon?: IconType; group: Group };
+
+function SkillItem({ s }: { s: Resolved }) {
+  const isUrl = s.icon?.startsWith("http") || s.icon?.startsWith("/");
   return (
-    <div
-      className="flex-shrink-0 flex items-center gap-2.5 px-4 py-2 rounded-xl mx-2"
-      style={{
-        backgroundColor: "var(--surface)",
-        border: "1px solid var(--border)",
-        color: "var(--fg)",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-      }}
-    >
-      {isUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={icon} alt={name} className="w-4 h-4 object-contain" />
-      ) : IconComponent ? (
-        <IconComponent size={18} className="flex-shrink-0" />
-      ) : (
-        <span className="text-sm">{icon}</span>
-      )}
-
+    <li className="group flex items-center gap-4 shrink-0 px-6 md:px-10">
       <span
-        className="text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap"
-        style={{ fontFamily: "var(--font-syne)" }}
+        className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 shrink-0 transition-colors duration-200 text-[var(--fg)] group-hover:text-[var(--accent)]"
       >
-        {name}
+        {isUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={s.icon} alt="" className="w-full h-full object-contain" />
+        ) : s.Icon ? (
+          <s.Icon className="w-full h-full" aria-hidden />
+        ) : (
+          <Wrench className="w-full h-full" aria-hidden />
+        )}
       </span>
-    </div>
-  );
-}
-
-function MarqueeRow({
-  skills,
-  direction = "ltr",
-  speed = 30,
-}: {
-  skills: { name: string; icon: string }[];
-  direction?: "ltr" | "rtl";
-  speed?: number;
-}) {
-  const [isHovered, setIsHovered] = useState(false);
-  const repeated = [...skills, ...skills, ...skills, ...skills];
-  const animX = direction === "ltr" ? ["0%", "-50%"] : ["-50%", "0%"];
-  
-  // Slow down factor when hovered
-  const duration = isHovered ? speed * 4 : speed;
-
-  return (
-    <div 
-      className="flex overflow-hidden w-full py-1.5 select-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <motion.div
-        className="flex"
-        animate={{ x: animX }}
-        transition={{ 
-          duration: duration, 
-          repeat: Infinity, 
-          ease: "linear",
-        }}
-        style={{ width: "max-content" }}
+      <span
+        className="font-display uppercase whitespace-nowrap transition-colors duration-200 text-[var(--fg)] group-hover:text-[var(--accent)]"
+        style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}
       >
-        {repeated.map((skill, i) => (
-          <SkillBadge key={i} name={skill.name} icon={skill.icon} />
-        ))}
-      </motion.div>
-    </div>
+        {s.name}
+      </span>
+      <span aria-hidden className="ml-6 md:ml-10 w-2 h-2 rounded-full" style={{ backgroundColor: "var(--accent)" }} />
+    </li>
   );
 }
 
+function MarqueeRow({ items, reverse, duration }: { items: Resolved[]; reverse?: boolean; duration: number }) {
+  // Two identical halves → translate -50% loops seamlessly.
+  const loop = items.length < 6 ? [...items, ...items] : items;
+  return (
+    <div className="marquee-row overflow-hidden py-3">
+      <ul
+        className={`marquee-track flex w-max ${reverse ? "marquee-reverse" : ""}`}
+        style={{ animationDuration: `${duration}s` }}
+      >
+        {loop.map((s, i) => <SkillItem key={`a${i}`} s={s} />)}
+        {loop.map((s, i) => <SkillItem key={`b${i}`} s={s} />)}
+      </ul>
+    </div>
+  );
+}
 
 export default function SkillMarquee() {
   const { skills } = usePortfolioData();
-  
   if (!skills || skills.length === 0) return null;
 
-  const half = Math.ceil(skills.length / 2);
-  const skillsRow1 = skills.slice(0, half);
-  const skillsRow2 = skills.slice(half);
+  const resolved: Resolved[] = skills.map((s) => {
+    const r = resolve(s.icon, s.name);
+    return { ...s, Icon: r?.icon, group: r?.group ?? "Tools" };
+  });
+  // Row 1: development; row 2: motion, design & tools
+  const dev = resolved.filter((s) => s.group === "Development");
+  const rest = resolved.filter((s) => s.group !== "Development");
+  const row1 = dev.length && rest.length ? dev : resolved.slice(0, Math.ceil(resolved.length / 2));
+  const row2 = dev.length && rest.length ? rest : resolved.slice(Math.ceil(resolved.length / 2));
 
   return (
-    <section
-      className="relative w-full py-12 md:py-16 overflow-hidden"
-      style={{ borderBottom: "1px solid var(--border)" }}
-    >
-      <div className="max-w-7xl mx-auto px-6 md:px-24 mb-10 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="flex items-center gap-3"
-        >
-          <div className="w-8 h-[2px] rounded-full" style={{ backgroundColor: "var(--accent-lime)" }} />
-          <h3 
-            className="text-lg md:text-xl font-black uppercase tracking-tight" 
-            style={{ fontFamily: "var(--font-syne)", color: "var(--fg)" }}
-          >
-            Tech <span style={{ color: "var(--accent-lime)" }}>Stack</span>
-          </h3>
-        </motion.div>
+    <section id="stack" className="relative w-full py-24 md:py-32 border-t hairline overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="flex items-center gap-4 pb-4 mb-10 md:mb-14 border-b hairline">
+          <span className="meta-label" style={{ color: "var(--accent)" }}>(05)</span>
+          <span className="meta-label">Tech stack</span>
+          <span className="flex-1" />
+          <span className="meta-label hidden sm:inline">{String(skills.length).padStart(2, "0")} tools · {GROUP_ORDER.filter((g) => resolved.some((s) => s.group === g)).join(" / ")}</span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-end mb-12 md:mb-16">
+          <h2 className="lg:col-span-8 font-display uppercase" style={{ fontSize: "clamp(3rem, 8vw, 7rem)", color: "var(--fg)" }}>
+            Tools of the <span style={{ color: "var(--accent)" }}>trade</span>
+          </h2>
+          <p className="lg:col-span-4 text-base md:text-lg leading-relaxed max-w-md" style={{ color: "var(--muted)" }}>
+            The stack I reach for daily — chosen for speed, polish and long-term maintainability.
+          </p>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-3 relative z-10">
-        <MarqueeRow skills={skillsRow1} direction="ltr" speed={40} />
-        <MarqueeRow skills={skillsRow2} direction="rtl" speed={45} />
-      </div>
-
-      {/* Decorative text — smaller for compact feel */}
-      <div 
-        className="absolute bottom-[-10px] right-6 text-[10vw] font-black uppercase leading-none opacity-[0.015] pointer-events-none select-none"
-        style={{ fontFamily: "var(--font-syne)", color: "var(--fg)" }}
-      >
-        Tools
+      <div className="marquee-mask flex flex-col gap-2 md:gap-4" aria-label="Tech stack">
+        <MarqueeRow items={row1} duration={Math.max(28, row1.length * 6)} />
+        <MarqueeRow items={row2} duration={Math.max(32, row2.length * 6)} reverse />
       </div>
     </section>
   );
 }
-
-
-

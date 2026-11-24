@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { put, list } from "@vercel/blob";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 const DATA_PATH = path.join(process.cwd(), "src/data/portfolio-data.json");
 const BLOB_JSON_NAME = "portfolio-data.json";
@@ -37,14 +38,17 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    
-    // Validate the password field
-    if (!body._auth || body._auth !== "jawad2026") {
+    if (!(await isAdminRequest())) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
-    
-    // Remove auth from data before saving
+
+    const body = await request.json();
+    if (!body || typeof body !== "object" || Array.isArray(body) || !body.profile) {
+      return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
+    }
+
+    // Drop the legacy auth field if an old client still sends it
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { _auth, ...dataToSave } = body;
     const jsonString = JSON.stringify(dataToSave, null, 2);
     

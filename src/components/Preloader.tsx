@@ -1,127 +1,130 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, animate, useMotionValue, useTransform } from "framer-motion";
 import { usePortfolioData } from "@/lib/portfolio-context";
+
+const EASE = [0.76, 0, 0.24, 1] as const;
+const ROLES = ["Creative Developer", "UI/UX Designer", "Motion Designer"];
+const DURATION = 1.9; // seconds for 0 → 100
 
 export default function Preloader() {
   const { profile } = usePortfolioData();
   const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
+  const [role, setRole] = useState(0);
+
+  const progress = useMotionValue(0);
+  const counter = useTransform(progress, (v) => String(Math.round(v)).padStart(3, "0"));
+  const bar = useTransform(progress, (v) => v / 100);
 
   useEffect(() => {
-    let current = 0;
-    const interval = setInterval(() => {
-      current += Math.random() * 4 + 2;
-      if (current >= 100) {
-        current = 100;
-        clearInterval(interval);
-        setTimeout(() => setLoading(false), 800);
-      }
-      setProgress(Math.min(current, 100));
-    }, 40);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const controls = animate(progress, 100, {
+      duration: reduced ? 0.3 : DURATION,
+      ease: [0.65, 0, 0.35, 1],
+      onComplete: () => setTimeout(() => setLoading(false), reduced ? 0 : 350),
+    });
+    const id = setInterval(() => setRole((r) => (r + 1) % ROLES.length), (DURATION * 1000) / ROLES.length);
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      controls.stop();
+      clearInterval(id);
+      document.documentElement.style.overflow = "";
+    };
+  }, [progress]);
 
-    return () => clearInterval(interval);
-  }, []);
+  useEffect(() => {
+    if (!loading) document.documentElement.style.overflow = "";
+  }, [loading]);
 
-  const circumference = 2 * Math.PI * 48;
-  const dashOffset = circumference - (progress / 100) * circumference;
+  const name = (profile.name || "Jawad Al Amien").toUpperCase();
+  const [first, ...rest] = name.split(" ");
 
   return (
     <AnimatePresence>
       {loading && (
         <motion.div
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.8, ease: [0.77, 0, 0.175, 1] }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-between px-8 py-12 pointer-events-none"
+          key="preloader"
+          role="status"
+          aria-live="polite"
+          aria-label="Loading portfolio"
+          initial={{ y: 0 }}
+          exit={{ y: "-100%" }}
+          transition={{ duration: 0.9, ease: EASE }}
+          className="fixed inset-0 z-[120] flex flex-col justify-between px-6 md:px-12 py-6 md:py-8 overflow-hidden"
           style={{ backgroundColor: "var(--bg)" }}
         >
-          {/* Top Bar */}
-          <div className="w-full flex justify-between items-center" style={{ color: "var(--muted)" }}>
-            <span className="font-bold text-xs uppercase tracking-widest" style={{ fontFamily: "var(--font-syne)" }}>
-              {profile.name || "Jawad Al Amien"}
+          {/* Top rail */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-y-2 pb-4 border-b hairline"
+          >
+            <span className="meta-label">
+              <span style={{ color: "var(--accent)" }}>(00)</span> Portfolio ©{new Date().getFullYear()}
             </span>
-            <span className="font-bold text-xs uppercase tracking-widest">
-              Portfolio 2026
-            </span>
-          </div>
+            <span className="meta-label text-right md:text-left hidden md:block">{profile.location || "Indonesia"}</span>
+            <span className="meta-label hidden md:block">Design · Code · Motion</span>
+            <span className="meta-label text-right">Loading</span>
+          </motion.div>
 
-          {/* Center — Circular Progress */}
-          <div className="flex flex-col items-center gap-8">
-            <div className="relative w-32 h-32">
-              {/* Background ring */}
-              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 110 110">
-                <circle
-                  cx="55" cy="55" r="48"
-                  fill="none"
-                  stroke="var(--accent-lime-glow)"
-                  strokeWidth="2"
-                />
-                <motion.circle
-                  cx="55" cy="55" r="48"
-                  fill="none"
-                  stroke="url(#progressGrad)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={dashOffset}
-                  style={{ transition: "stroke-dashoffset 0.1s linear" }}
-                />
-                <defs>
-                  <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="var(--accent)" />
-                    <stop offset="100%" stopColor="var(--accent-lime)" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              
-              {/* Counter */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span
-                  className="text-3xl font-black tabular-nums"
-                  style={{ fontFamily: "var(--font-syne)", color: "var(--fg)" }}
+          {/* Name + rotating role */}
+          <div className="flex flex-col">
+            {[first, rest.join(" ")].filter(Boolean).map((line, i) => (
+              <div key={line} className="overflow-hidden">
+                <motion.h1
+                  initial={{ y: "105%" }}
+                  animate={{ y: 0 }}
+                  transition={{ delay: 0.15 + i * 0.12, duration: 0.9, ease: EASE }}
+                  className="font-display uppercase"
+                  style={{
+                    fontSize: "clamp(4rem, 15vw, 13rem)",
+                    lineHeight: 0.84,
+                    color: i === 1 ? "var(--accent)" : "var(--fg)",
+                  }}
                 >
-                  {Math.round(progress)}
-                </span>
+                  {line}
+                </motion.h1>
               </div>
-            </div>
+            ))}
 
-            <div className="flex flex-col items-center gap-2">
-              <h1
-                className="text-3xl md:text-5xl font-black uppercase tracking-tighter"
-                style={{ fontFamily: "var(--font-syne)", color: "var(--fg)" }}
-              >
-                Creative
-              </h1>
-              <h1
-                className="text-3xl md:text-5xl font-black uppercase tracking-tighter"
-                style={{
-                  fontFamily: "var(--font-syne)",
-                  background: "linear-gradient(135deg, var(--accent), var(--accent-lime))",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                Developer
-              </h1>
+            <div className="flex items-center gap-3 mt-6 md:mt-8 h-7 overflow-hidden">
+              <span className="w-8 h-px" style={{ backgroundColor: "var(--line-strong)" }} />
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={role}
+                  initial={{ y: "100%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: "-100%", opacity: 0 }}
+                  transition={{ duration: 0.35, ease: EASE }}
+                  className="font-grotesk text-base md:text-lg"
+                  style={{ color: "var(--muted)" }}
+                >
+                  {ROLES[role]}
+                </motion.span>
+              </AnimatePresence>
             </div>
           </div>
 
-          {/* Bottom */}
-          <div className="w-full flex justify-between items-end">
-            <span
-              className="text-xs uppercase tracking-widest font-bold"
-              style={{ color: "var(--muted)" }}
-            >
-              Loading Experience
-            </span>
-            <span
-              className="text-xs uppercase tracking-widest font-bold"
-              style={{ color: "var(--muted)" }}
-            >
-              Indonesia
-            </span>
+          {/* Bottom: progress */}
+          <div>
+            <div className="flex items-end justify-between gap-6 mb-4">
+              <span className="meta-label pb-2">Crafting the experience</span>
+              <span
+                className="font-display tabular-nums leading-none"
+                style={{ fontSize: "clamp(4rem, 12vw, 10rem)", color: "var(--fg)" }}
+              >
+                <motion.span>{counter}</motion.span>
+                <span style={{ color: "var(--accent)" }}>%</span>
+              </span>
+            </div>
+            <div className="relative h-px w-full" style={{ backgroundColor: "var(--line)" }}>
+              <motion.div
+                className="absolute inset-y-0 left-0 w-full origin-left"
+                style={{ scaleX: bar, backgroundColor: "var(--accent)", height: 2, top: -0.5 }}
+              />
+            </div>
           </div>
         </motion.div>
       )}

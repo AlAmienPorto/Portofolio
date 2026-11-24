@@ -9,6 +9,7 @@ import {
   useVelocity,
   useAnimationFrame,
   useMotionValue,
+  useInView,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +48,8 @@ export function ScrollVelocityRow({
   className?: string;
   style?: React.CSSProperties;
 }) {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(rowRef, { margin: "100px" });
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
@@ -63,6 +66,7 @@ export function ScrollVelocityRow({
   const directionFactor = useRef<number>(1);
 
   useAnimationFrame((t, delta) => {
+    if (!inView) return; // don't animate while off-screen
     let moveBy = direction * baseVelocity * (delta / 1000);
 
     // Change directionFactor based on scroll velocity
@@ -78,8 +82,8 @@ export function ScrollVelocityRow({
 
   // Render 10 copies. -10% of total width equals exactly 1 copy width.
   return (
-    <div className={cn("flex whitespace-nowrap", className)} style={style}>
-      <motion.div className="flex whitespace-nowrap flex-nowrap" style={{ x }}>
+    <div ref={rowRef} className={cn("flex whitespace-nowrap", className)} style={style}>
+      <motion.div className="flex whitespace-nowrap flex-nowrap will-change-transform" style={{ x }}>
         {Array.from({ length: 10 }).map((_, i) => (
           <span key={i} className="block pr-[4rem]">
             {children}

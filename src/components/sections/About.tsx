@@ -2,13 +2,12 @@
 
 import { useRef } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { usePortfolioData } from "@/lib/portfolio-context";
-import { Download, ExternalLink, Calendar, Briefcase, MapPin, CheckCircle2 } from "lucide-react";
+import { Download, MapPin, ArrowUpRight } from "lucide-react";
+import type { Experience } from "@/lib/portfolio-context";
 
 import HolographicCard from "@/components/HolographicCard";
 
-import ShineLabel from "@/components/ShineLabel";
 
 export default function About() {
   const { profile, experience } = usePortfolioData();
@@ -18,7 +17,7 @@ export default function About() {
     <section
       ref={containerRef}
       id="about"
-      className="relative w-full py-24 md:py-40 px-6 md:px-24 overflow-hidden"
+      className="relative w-full py-24 md:py-36 px-6 md:px-12 overflow-hidden"
     >
       {/* Dynamic Background elements */}
       <div
@@ -48,7 +47,10 @@ export default function About() {
               viewport={{ once: true }}
               className="mb-2"
             >
-              <ShineLabel text="✦ About Me" fontSize="text-2xl" />
+              <div className="flex items-center gap-4 pb-4 border-b hairline">
+                <span className="meta-label" style={{ color: "var(--accent)" }}>(01)</span>
+                <span className="meta-label">About me</span>
+              </div>
             </motion.div>
 
             <motion.h2
@@ -56,8 +58,8 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-[0.9]"
-              style={{ fontFamily: "var(--font-syne)", color: "var(--fg)" }}
+              className="font-display uppercase"
+              style={{ fontSize: "clamp(3.25rem, 7vw, 6.5rem)", color: "var(--fg)" }}
             >
               A Creative <br />
               <span style={{ color: "var(--accent-lime)" }}>Developer</span> <br />
@@ -69,7 +71,7 @@ export default function About() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="text-lg md:text-2xl leading-relaxed"
+              className="text-lg md:text-xl leading-relaxed max-w-xl"
               style={{ color: "var(--muted)", fontFamily: "var(--font-manrope)" }}
             >
               {profile.bio || "Creative developer building immersive digital experiences."}
@@ -82,94 +84,123 @@ export default function About() {
               transition={{ delay: 0.4 }}
               className="flex flex-wrap gap-4"
             >
-              <a
-                href="/uploads/File/RESUME_JAWAD.pdf"
-                download="RESUME_JAWAD.pdf"
-                className="hover-target flex items-center gap-2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all"
-                style={{
-                  backgroundColor: "var(--accent-lime)",
-                  color: "#081c01ff",
-                  boxShadow: "0 10px 30px var(--shadow-lime)"
-                }}
-              >
-                <Download size={16} strokeWidth={3} />
+              <a href="/uploads/File/RESUME_JAWAD.pdf" download="RESUME_JAWAD.pdf" className="btn-primary">
+                <Download size={16} />
                 Download Resume
               </a>
-              <div
-                className="flex items-center gap-2 px-6 py-4 rounded-2xl glass-card text-xs font-bold uppercase tracking-widest"
-                style={{ color: "var(--fg)" }}
-              >
-                <MapPin size={14} style={{ color: "var(--accent-lime)" }} />
+              <span className="btn-outline pointer-events-none">
+                <MapPin size={14} style={{ color: "var(--accent)" }} />
                 {profile.location || "Indonesia"}
-              </div>
+              </span>
             </motion.div>
           </div>
         </div>
 
 
-        {/* Experience Section — syfrsam Deep Dive Structure */}
-        <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_2fr] gap-12 lg:gap-24">
-          <div className="lg:sticky lg:top-40 h-fit">
-            <motion.h3
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-2xl font-black uppercase tracking-tight mb-4"
-              style={{ fontFamily: "var(--font-syne)", color: "var(--fg)" }}
-            >
-              Professional <br /> Experience
-            </motion.h3>
-            <div className="w-12 h-1 rounded-full" style={{ backgroundColor: "var(--accent-lime)" }} />
-          </div>
-
-          <div className="flex flex-col gap-4 relative">
-            {/* Timeline line */}
-            <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-lime-400/50 via-white/10 to-transparent hidden md:block" />
-
-            {experience && experience.map((exp, idx) => (
-              <motion.div
-                key={exp.id}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.7, delay: idx * 0.1 }}
-                className="relative md:pl-16 py-10 group/exp transition-all duration-500 border-b border-white/5 last:border-0"
-              >
-                {/* Timeline dot */}
-                <div
-                  className="absolute left-[-4px] top-[46px] w-2 h-2 rounded-full hidden md:block z-20 bg-white/20 group-hover/exp:bg-lime-400 group-hover/exp:scale-125 transition-all duration-500"
-                  style={{ boxShadow: "0 0 0 4px rgba(0,0,0,1)" }}
-                />
-
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                  <div className="flex flex-col gap-1">
-                    <h4 className="text-2xl md:text-3xl font-black uppercase tracking-tighter" style={{ color: "var(--fg)" }}>
-                      {exp.company}
-                    </h4>
-                    <p className="text-sm font-bold uppercase tracking-widest" style={{ color: "var(--accent-lime)" }}>
-                      {exp.role}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest opacity-40 group-hover/exp:opacity-100 transition-opacity">
-                    <Calendar size={14} />
-                    {exp.duration}
-                  </div>
-                </div>
-
-                <ul className="flex flex-col gap-3 mt-4">
-                  {exp.description.map((bullet, i) => (
-                    <li key={i} className="flex items-start gap-3 text-base" style={{ color: "var(--muted)" }}>
-                      <CheckCircle2 size={16} className="mt-1 flex-shrink-0" style={{ color: "var(--accent-lime)" }} />
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        {/* ── Professional Experience ── */}
+        <ExperienceList experience={experience || []} />
       </div>
     </section>
   );
 }
 
+
+function isCurrent(duration: string) {
+  return /present|now|sekarang/i.test(duration || "");
+}
+
+function splitDuration(duration: string) {
+  const [from, to] = (duration || "").split(/\s*[-–—]\s*/);
+  return { from: from || duration, to: to ? (isCurrent(to) ? "Now" : to) : "" };
+}
+
+function ExperienceList({ experience }: { experience: Experience[] }) {
+  if (!experience.length) return null;
+
+  // Current roles first, then by start year (newest first)
+  const sorted = [...experience].sort((a, b) => {
+    const c = Number(isCurrent(b.duration)) - Number(isCurrent(a.duration));
+    if (c) return c;
+    return (parseInt(splitDuration(b.duration).from) || 0) - (parseInt(splitDuration(a.duration).from) || 0);
+  });
+  const years = experience.map((e) => parseInt(splitDuration(e.duration).from)).filter((n) => !Number.isNaN(n));
+  const since = years.length ? Math.min(...years) : null;
+
+  return (
+    <div>
+      <div className="flex items-center gap-4 pb-4 mb-10 md:mb-14 border-b hairline">
+        <span className="meta-label" style={{ color: "var(--accent)" }}>(01.1)</span>
+        <span className="meta-label">Professional experience</span>
+        <span className="flex-1" />
+        <span className="meta-label hidden sm:inline">
+          {String(experience.length).padStart(2, "0")} roles{since ? ` · since ${since}` : ""}
+        </span>
+      </div>
+
+      <h3 className="font-display uppercase mb-12 md:mb-16" style={{ fontSize: "clamp(3rem, 7vw, 6rem)", color: "var(--fg)" }}>
+        Where I&apos;ve <span style={{ color: "var(--accent)" }}>worked</span>
+      </h3>
+
+      <ol className="border-t hairline">
+        {sorted.map((exp, idx) => {
+          const { from, to } = splitDuration(exp.duration);
+          const current = isCurrent(exp.duration);
+          return (
+            <motion.li
+              key={exp.id}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, delay: Math.min(idx, 3) * 0.06 }}
+              className="group relative grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 py-8 md:py-10 border-b hairline"
+            >
+              {/* hover rail */}
+              <span
+                aria-hidden
+                className="absolute left-0 top-0 h-full w-[2px] origin-top scale-y-0 group-hover:scale-y-100 transition-transform duration-500"
+                style={{ backgroundColor: "var(--accent)" }}
+              />
+
+              {/* Period */}
+              <div className="md:col-span-3 md:pl-6 flex md:flex-col items-baseline md:items-start gap-3 md:gap-2">
+                <span className="font-display tabular-nums" style={{ fontSize: "clamp(1.75rem, 2.6vw, 2.5rem)", color: "var(--fg)" }}>
+                  {from}
+                  {to && <span style={{ color: "var(--muted)" }}> — {to}</span>}
+                </span>
+                {current && (
+                  <span
+                    className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full font-grotesk text-[11px] font-medium"
+                    style={{ backgroundColor: "var(--accent-glow)", color: "var(--accent)", border: "1px solid var(--line-strong)" }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "var(--accent)" }} />
+                    Current
+                  </span>
+                )}
+              </div>
+
+              {/* Company + role */}
+              <div className="md:col-span-4">
+                <h4 className="font-display uppercase mb-2" style={{ fontSize: "clamp(2rem, 3.4vw, 3rem)", color: "var(--fg)" }}>
+                  {exp.company}
+                </h4>
+                <p className="meta-label" style={{ color: "var(--accent)" }}>
+                  {exp.role}
+                </p>
+              </div>
+
+              {/* Highlights */}
+              <ul className="md:col-span-5 flex flex-col gap-2.5">
+                {exp.description.filter((d) => d.trim()).map((bullet, i) => (
+                  <li key={i} className="grid grid-cols-[1.25rem_1fr] gap-2 text-[15px] leading-relaxed" style={{ color: "var(--muted)" }}>
+                    <ArrowUpRight size={14} className="mt-1 rotate-45" style={{ color: "var(--accent)" }} />
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
