@@ -10,8 +10,6 @@ export interface VideoInfo {
   url: string;
   /** iframe src for the full player (youtube / tiktok / instagram) */
   embed?: string;
-  /** iframe src for a muted, looping, chrome-less preview (cards) */
-  preview?: string;
   /** thumbnail we can show without loading the embed */
   thumb?: string;
   /** true for vertical formats (shorts, reels, tiktok) */
@@ -48,7 +46,6 @@ export function parseVideo(raw: string): VideoInfo | null {
         platform: "youtube",
         url: u.href,
         embed: `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&playsinline=1`,
-        preview: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&disablekb=1&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3`,
         thumb: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
         vertical,
       };
@@ -64,9 +61,6 @@ export function parseVideo(raw: string): VideoInfo | null {
       url: u.href,
       // player/v1 is a clean 9:16 video player (no profile card around it)
       embed: id ? `https://www.tiktok.com/player/v1/${id}?autoplay=1&loop=1&rel=0&music_info=1&description=0` : undefined,
-      preview: id
-        ? `https://www.tiktok.com/player/v1/${id}?autoplay=1&muted=1&loop=1&controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0`
-        : undefined,
       vertical: true,
     };
   }

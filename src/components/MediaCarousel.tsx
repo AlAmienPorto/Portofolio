@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ExternalLink, Play } from "lucide-react";
 import { PLATFORM_LABEL, type MediaItem, type VideoInfo } from "@/lib/media";
@@ -192,20 +192,11 @@ function VideoSlide({ info, title }: { info: VideoInfo; title: string }) {
     );
   }
 
-  // Instagram's embed is a post card (header + caption), not a bare video — give it room.
+  // Instagram's embed is a whole post card; crop it down to just the video.
   if (info.platform === "instagram") {
     return (
-      <div className="flex flex-col items-center gap-3">
-        <div className="relative w-[min(100%,420px)] h-[min(70vh,760px)] rounded-xl overflow-hidden" style={{ ...frameStyle, backgroundColor: "#fff" }}>
-          <iframe
-            src={info.embed}
-            title={`${title} — Instagram`}
-            className="absolute inset-0 w-full h-full border-0"
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowFullScreen
-            loading="lazy"
-          />
-        </div>
+      <div className="w-full flex flex-col items-center gap-3">
+        <InstagramFrame src={info.embed} title={title} className={`${PORTRAIT_BOX} rounded-xl overflow-hidden`} style={frameStyle} />
         {openLink}
       </div>
     );
@@ -237,6 +228,67 @@ function VideoSlide({ info, title }: { info: VideoInfo; title: string }) {
         )}
       </div>
       {openLink}
+    </div>
+  );
+}
+
+/**
+ * Instagram's /embed/ page renders: a ~54px profile header, then the media in
+ * a 4:5 box (a 9:16 reel is pillar-boxed inside it), then likes / comments.
+ * We render it at its native 420px width, scale it so the reel itself fills
+ * our 9:16 frame, and offset it so header, bars and footer fall outside.
+ * The "Open on Instagram" link below stays as the fallback.
+ */
+const IG = { width: 420, height: 760, header: 54 };
+const IG_MEDIA_H = IG.width * 1.25;
+const IG_VIDEO_W = (IG_MEDIA_H * 9) / 16;
+const IG_OFFSET_X = (IG.width - IG_VIDEO_W) / 2;
+
+function InstagramFrame({
+  src,
+  title,
+  className,
+  style,
+}: {
+  src: string;
+  title: string;
+  className: string;
+  style: React.CSSProperties;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const scale = width / IG_VIDEO_W;
+
+  return (
+    <div ref={ref} className={className} style={style}>
+      {width > 0 && (
+        <iframe
+          src={src}
+          title={`${title} — Instagram`}
+          scrolling="no"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+          className="absolute border-0"
+          style={{
+            width: IG.width,
+            height: IG.height,
+            left: -IG_OFFSET_X * scale,
+            top: -IG.header * scale,
+            transform: `scale(${scale})`,
+            transformOrigin: "0 0",
+            backgroundColor: "#000",
+          }}
+        />
+      )}
     </div>
   );
 }

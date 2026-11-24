@@ -4,23 +4,24 @@ import { useEffect, useRef, useState } from "react";
 import type { VideoInfo } from "@/lib/media";
 
 /**
- * Muted, looping, chrome-less video preview that fills its (relatively
- * positioned) parent like `object-fit: cover`.
+ * Video preview for cards. Fills its (relatively positioned) parent like
+ * `object-fit: cover`.
  *
- * Performance: the player is only mounted while `active` is true (in view /
- * hovered) and never under prefers-reduced-motion — otherwise only the poster
- * image is rendered.
+ * - Direct video files play muted & looping while `active` (in view / hovered).
+ * - YouTube / TikTok / Instagram show a clean poster with a slow zoom. Their
+ *   embeds bring titles, spinners and like buttons that clutter a card, so the
+ *   real player only appears in the viewer.
+ * - Nothing animates under prefers-reduced-motion.
  */
 export default function VideoPreview({
   info,
   poster,
   active,
-  frame = "portrait",
 }: {
   info: VideoInfo;
   poster?: string;
   active: boolean;
-  /** shape of the box we're filling — used to crop embeds correctly */
+  /** accepted for compatibility; previews always cover their box */
   frame?: "portrait" | "landscape";
 }) {
   const [reduced, setReduced] = useState(false);
@@ -36,7 +37,6 @@ export default function VideoPreview({
 
   const play = active && !reduced;
 
-  // Native files: keep the element mounted (it doubles as the poster) and just play/pause.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -63,44 +63,17 @@ export default function VideoPreview({
     );
   }
 
-  // Embeds: size the iframe so its video covers the box (crop the overflow).
-  const sourceIsPortrait = info.vertical;
-  let iframeStyle: React.CSSProperties;
-  if (frame === "portrait" && !sourceIsPortrait) {
-    // 16:9 video in a 9:16 box → full height, wider than the box
-    iframeStyle = { height: "100%", width: "316%", left: "50%", top: 0, transform: "translateX(-50%)" };
-  } else if (frame === "landscape" && sourceIsPortrait) {
-    // 9:16 video in a 4:3-ish box → full width, taller than the box
-    iframeStyle = { width: "100%", height: "240%", top: "50%", left: 0, transform: "translateY(-50%)" };
-  } else {
-    iframeStyle = { inset: 0, width: "100%", height: "100%" };
-  }
-
-  return (
-    <>
-      {cover && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={cover} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-      )}
-      {play && info.preview && <EmbedPreview src={info.preview} style={iframeStyle} />}
-    </>
-  );
-}
-
-/** Mounted fresh each time playback starts, so it always fades in from the poster. */
-function EmbedPreview({ src, style }: { src: string; style: React.CSSProperties }) {
-  const [ready, setReady] = useState(false);
-  return (
-    <iframe
-      src={src}
-      title=""
+  return cover ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={cover}
+      alt=""
       aria-hidden
-      tabIndex={-1}
-      allow="autoplay; encrypted-media"
-      onLoad={() => setTimeout(() => setReady(true), 500)}
-      className="absolute border-0 pointer-events-none transition-opacity duration-500"
-      style={{ ...style, opacity: ready ? 1 : 0, backgroundColor: "#000" }}
+      loading="lazy"
+      className={`absolute inset-0 w-full h-full object-cover ${play ? "poster-drift" : ""}`}
     />
+  ) : (
+    <span aria-hidden className="absolute inset-0" style={{ backgroundColor: "#111" }} />
   );
 }
 

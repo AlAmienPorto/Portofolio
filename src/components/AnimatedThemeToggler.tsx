@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useId } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/lib/theme";
 
@@ -68,8 +68,9 @@ export function AnimatedThemeToggler({
   sound?: boolean;
 }) {
   const { theme, toggleTheme } = useTheme();
-  const rawId = useId();
-  const maskId = `att${rawId.replace(/:/g, "")}`;
+  // Rendered once (navbar). A fixed id avoids useId drifting between the
+  // server and client trees, which caused a hydration mismatch on mask/url().
+  const maskId = "att-theme-mask";
   const lastSnd = useRef(0);
   const isFirst = useRef(true);
   

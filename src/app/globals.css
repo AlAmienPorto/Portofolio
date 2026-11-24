@@ -897,3 +897,14 @@ textarea.admin-input-inset {
   0%, 100% { transform: scaleY(0.3); }
   50% { transform: scaleY(1); }
 }
+
+/* Slow "Ken Burns" drift on video posters while a card is in view */
+.poster-drift {
+  animation: poster-drift 9s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes poster-drift {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.08) translate3d(0, -2%, 0); }
+}

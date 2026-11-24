@@ -636,7 +636,7 @@ function CaseStudyViewer({
       {item && parsed && (
         <motion.div
           key="viewer"
-          className="fixed inset-0 z-[90]"
+          className="fixed inset-0 z-[110]"
           role="dialog"
           aria-modal="true"
           aria-labelledby="case-title"
